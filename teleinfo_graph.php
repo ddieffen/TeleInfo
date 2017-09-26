@@ -37,13 +37,13 @@
         });
         
     var lineChart = new google.visualization.ChartWrapper({
-          'chartType': 'LineChart',
+          'chartType': 'AreaChart',
           'containerId': 'chart_div',
           'options': {
-                             title: 'Consommation instantanée',
+                             title: 'Consommation instantanée (VA)',
                              height : 400,
                              backgroundColor: '#FFF',
-                             colors : ['#375D81', '#ABC8E2'],
+                             colors : ['#e0440e', '#375D81'],
                              curveType : 'function',
                              focusTarget : 'category',
                              lineWidth : '1',
@@ -65,10 +65,10 @@
     data.addColumn('number', 'Heures creuses');
     data.addRows([<?php echo getDailyData (365); ?>]);
     var dailyChartOptions = {
-                   title: 'Consommation journalière',
+                   title: 'Consommation journalière (kVA)',
                    height : 200,
                    backgroundColor: '#FFF',
-                   colors : ['#375D81', '#ABC8E2'],
+                   colors : ['#e0440e', '#375D81'],
                    focusTarget : 'category',
                    isStacked: true,
                    legend : {position: 'bottom', alignment: 'center', textStyle: {color: '#333', fontSize: 16}},
@@ -98,10 +98,10 @@ function floorDate(date) {
     var formatter = new google.visualization.DateFormat({pattern: "MMM ' 'yyyy"});
     formatter.format(monthlyData, 0);
     var monthlyChartOptions = {
-                   title: 'Consommation mensuelle',
+                   title: 'Consommation mensuelle (kVA)',
                    height : 200,
                    backgroundColor: '#FFF',
-                   colors : ['#375D81', '#ABC8E2'],
+                   colors : ['#e0440e', '#375D81'],
                    focusTarget : 'category',
                    isStacked: true,
                    legend : {position: 'bottom', alignment: 'center', textStyle: {color: '#333', fontSize: 16}},
