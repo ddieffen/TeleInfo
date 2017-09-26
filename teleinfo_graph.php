@@ -11,7 +11,6 @@
         data.addColumn('date', 'Date');
         data.addColumn('number', 'V.A');
         data.addColumn({type:'string', role:'style'});
-        data.addColumn('number', 'W');
         data.addRows([<?php echo getInstantConsumption (5); ?>]);
     var dashboard = new google.visualization.Dashboard(
             document.getElementById('puissance'));

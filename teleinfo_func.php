@@ -156,7 +156,7 @@
       $hour   = date("G", $row['timestamp']);
       $minute = date("i", $row['timestamp']);
       $second = date("s", $row['timestamp']);
-      $datas[] = "[{v:new Date($year, $month, $day, $hour, $minute, $second), f:'".date("j", $row['timestamp'])." ".$months[date("m", $row['timestamp'])]." ".date("H\hi", $row['timestamp'])."'}, {v:".$row['va'].", f:'".$row['va']." V.A'}, {v:".$row['watt'].", f:'".$row['watt']." kW'}]";
+      $datas[] = "[{v:new Date($year, $month, $day, $hour, $minute, $second), f:'".date("j", $row['timestamp'])." ".$months[date("m", $row['timestamp'])]." ".date("H\hi", $row['timestamp'])."'}, {v:".$row['va'].", f:'".$row['va']." V.A'}]";
 
     }
 
@@ -164,28 +164,6 @@
   }
 
   //
-  //  recupere les donnees de consommation des $nb_days derniers jours et les met en forme pour les affichers sur le graphique
-  //
-  function getDatasConso ($nb_days) {
-    global $sqlite;
-    $months    = array('01' => 'janv', '02' => 'fev', '03' => 'mars', '04' => 'avril', '05' => 'mai', '06' => 'juin', '07' => 'juil', '08' => 'aout', '09' => 'sept', '10' => 'oct', '11' => 'nov', '12' => 'dec');
-    $now  = time();
-    $past = strtotime("-$nb_days day", $now);
-
-    $db = new SQLite3($sqlite);
-    $results = $db->query("SELECT * FROM conso WHERE timestamp > $past ORDER BY timestamp ASC;");
-
-    $datas = array();
-
-    while($row = $results->fetchArray(SQLITE3_ASSOC)){
-      $day    = date("j", $row['timestamp'])." ".$months[date("m", $row['timestamp'])];
-      $datas[] = "['".$day."', {v:".$row['daily_hp'].", f:'".$row['daily_hp']." kWh'}, {v:".$row['daily_hc'].", f:'".$row['daily_hc']." kWh'}]";
-    }
-
-    return implode(', ', $datas);
-  }
-
-//
   //  recupere les donnees de puissance des $nb_days derniers jours et les met en forme pour les afficher sur le graphique
   //
   function getInstantConsumption ($nb_days) {
@@ -207,7 +185,7 @@
       $second = date("s", $row['timestamp']);
       if ($row['hchp'] == 'HP') {$hchp_indicator ='color: #e0440e';} else {$hchp_indicator = 'color: #375D81';}
       $data[] = "[{v:new Date($year, $month, $day, $hour, $minute, $second), f:'".date("j", $row['timestamp'])." ".date("M", $row['timestamp'])." ".date("H\hi", $row['timestamp'])."'}, 
-                  {v:".$row['va'].", f:'".$row['va']." V.A'}, '".$hchp_indicator."', {v:".$row['watt'].", f:'".$row['watt']." W'}]";
+                  {v:".$row['va'].", f:'".$row['va']." V.A'}, '".$hchp_indicator."']";
     }
 
     return implode(', ', $data);
