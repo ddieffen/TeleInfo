@@ -48,35 +48,50 @@
   //
   function handlePuissance () {
     global $sqlite;
-    $db = new SQLite3($sqlite);
-    $db->exec('CREATE TABLE IF NOT EXISTS puissance (timestamp INTEGER, hchp TEXT, va REAL, iinst REAL, watt REAL);'); // cree la table puissance si elle n'existe pas
+    $success = False;
 
-    $trame = getTeleinfo (); // recupere une trame teleinfo
+    for($i = 0; $i <= 10; $i++){
 
-    $datas = array();
-    $datas['timestamp'] = time();
-    echo("trame PTEC: ".$trame['PTEC']."\r\n");
-    $datas['hchp']      = substr($trame['PTEC'],0,2); // indicateur heure pleine/creuse, on garde seulement les carateres HP (heure pleine) et HC (heure creuse)
-    echo("datas HCDP: ".$datas['hchp']."\r\n");
-    echo("trame PAPP: ".$trame['PAPP']."\r\n");
-    $datas['va']        = preg_replace('`^[0]*`','',$trame['PAPP']); // puissance en V.A, on supprime les 0 en debut de chaine
-    if($datas['va'] == ""){
-      $datas['va'] .= "0";
+      echo("Trying to handle Puissance #".$i."\r\n");
+
+      $db = new SQLite3($sqlite);
+      $db->exec('CREATE TABLE IF NOT EXISTS puissance (timestamp INTEGER, hchp TEXT, va REAL, iinst REAL, watt REAL);'); // cree la table puissance si elle n'existe pas
+
+      $trame = getTeleinfo (); // recupere une trame teleinfo
+
+      $datas = array();
+      $datas['timestamp'] = time();
+      echo("trame PTEC: ".$trame['PTEC']."\r\n");
+      $datas['hchp']      = substr($trame['PTEC'],0,2); // indicateur heure pleine/creuse, on garde seulement les carateres HP (heure pleine) et HC (heure creuse)
+      echo("datas HCDP: ".$datas['hchp']."\r\n");
+      echo("trame PAPP: ".$trame['PAPP']."\r\n");
+      $datas['va']        = preg_replace('`^[0]*`','',$trame['PAPP']); // puissance en V.A, on supprime les 0 en debut de chaine
+      if($datas['va'] == ""){
+        $datas['va'] .= "0";
+      }
+      echo("datas HCDP: ".$datas['va']."\r\n");
+      echo("trame IINST: ".$trame['IINST']."\r\n");
+      $datas['iinst']     = preg_replace('`^[0]*`','',$trame['IINST']); // intensité instantanée en A, on supprime les 0 en debut de chaine
+      if($datas['iinst'] == ""){
+        $datas['iinst'] .= "0";
+      }
+      echo("datas iinst: ".$datas['iinst']."\r\n");
+      $datas['watt']      = $datas['iinst']*220; // intensite en A X 220 V
+
+      if($db->busyTimeout(5000)){ // stock les donnees
+        if($datas['hchp'] != ""){
+          echo("INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");");
+          $db->exec("INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");");
+          $success = True;
+        }
+      }
+
+      if($success == True){
+        echo("Break\r\n");
+        break;
+      }
+
     }
-    echo("datas HCDP: ".$datas['va']."\r\n");
-    echo("trame IINST: ".$trame['IINST']."\r\n");
-    $datas['iinst']     = preg_replace('`^[0]*`','',$trame['IINST']); // intensité instantanée en A, on supprime les 0 en debut de chaine
-    if($datas['iinst'] == ""){
-      $datas['iinst'] .= "0";
-    }
-    echo("datas iinst: ".$datas['iinst']."\r\n");
-    $datas['watt']      = $datas['iinst']*220; // intensite en A X 220 V
-
-    if($db->busyTimeout(5000)){ // stock les donnees
-      echo("INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");");
-      $db->exec("INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");");
-    }
-
     return 1;
   }
 
@@ -85,51 +100,64 @@
   //
   function handleConso () {
     global $sqlite;
-    $db = new SQLite3($sqlite);
-    $db->exec('CREATE TABLE IF NOT EXISTS conso (timestamp INTEGER, total_hc INTEGER, total_hp INTEGER, daily_hc REAL, daily_hp REAL);'); // cree la table conso si elle n'existe pas
+    $success = False;
 
-    $trame     = getTeleinfo (); // recupere une trame teleinfo
+    for($i = 0; $i <= 10; $i++){
 
-    $today     = strtotime('today 00:00:00');
-    $yesterday = strtotime("-1 day 00:00:00");
+      echo("Trying to handle Conso #".$i."\r\n");
 
-    // recupere la conso totale enregistree la veille pour pouvoir calculer la difference et obtenir la conso du jour
-    if($db->busyTimeout(5000)){
-      $previous = $db->query("SELECT * FROM conso WHERE timestamp = '".$yesterday."';")->fetchArray(SQLITE3_ASSOC);
-    }
-    if(empty($previous)){
-      $previous = array();
-      $previous['timestamp'] = $yesterday;
-      $previous['total_hc']  = 0;
-      $previous['total_hp']  = 0;
-      $previous['daily_hc']  = 0;
-      $previous['daily_hp']  = 0;
-    }
+      $db = new SQLite3($sqlite);
+      $db->exec('CREATE TABLE IF NOT EXISTS conso (timestamp INTEGER, total_hc INTEGER, total_hp INTEGER, daily_hc REAL, daily_hp REAL);'); // cree la table conso si elle n'existe pas
 
-    $datas = array();
-    $datas['query']     = 'hchp';
-    $datas['timestamp'] = $today;
-    echo("trame HCHC: ".$trame['HCHC']."\r\n");
-    $datas['total_hc']  = preg_replace('`^[0]*`','',$trame['HCHC']); // conso total en Wh heure creuse, on supprime les 0 en debut de chaine
-    echo("trame HCHP: ".$trame['HCHP']."\r\n");
-    $datas['total_hp']  = preg_replace('`^[0]*`','',$trame['HCHP']); // conso total en Wh heure pleine, on supprime les 0 en debut de chaine
+      $trame     = getTeleinfo (); // recupere une trame teleinfo
 
-    if($previous['total_hc'] == 0){
-      $datas['daily_hc'] = 0;
-    }
-    else{
-      $datas['daily_hc']  = ($datas['total_hc']-$previous['total_hc'])/1000; // conso du jour heure creuse = total aujourd'hui - total hier, on divise par 1000 pour avec un resultat en kWh
-    }
+      $today     = strtotime('today 00:00:00');
+      $yesterday = strtotime("-1 day 00:00:00");
 
-    if($previous['total_hp'] == 0){
-      $datas['daily_hp'] = 0;
-    }
-    else{
-      $datas['daily_hp']  = ($datas['total_hp']-$previous['total_hp'])/1000; // conso du jour heure pleine = total aujourd'hui - total hier, on divise par 1000 pour avec un resultat en kWh
-    }
+      // recupere la conso totale enregistree la veille pour pouvoir calculer la difference et obtenir la conso du jour
+      if($db->busyTimeout(5000)){
+        $previous = $db->query("SELECT * FROM conso WHERE timestamp = '".$yesterday."';")->fetchArray(SQLITE3_ASSOC);
+      }
+      if(empty($previous)){
+        $previous = array();
+        $previous['timestamp'] = $yesterday;
+        $previous['total_hc']  = 0;
+        $previous['total_hp']  = 0;
+        $previous['daily_hc']  = 0;
+        $previous['daily_hp']  = 0;
+      }
 
-    if($db->busyTimeout(5000)){ // stock les donnees
-      $db->exec("INSERT INTO conso (timestamp, total_hc, total_hp, daily_hc, daily_hp) VALUES (".$datas['timestamp'].", ".$datas['total_hc'].", ".$datas['total_hp'].", ".$datas['daily_hc'].", ".$datas['daily_hp'].");");
+      $datas = array();
+      $datas['query']     = 'hchp';
+      $datas['timestamp'] = $today;
+      echo("trame HCHC: ".$trame['HCHC']."\r\n");
+      $datas['total_hc']  = preg_replace('`^[0]*`','',$trame['HCHC']); // conso total en Wh heure creuse, on supprime les 0 en debut de chaine
+      echo("trame HCHP: ".$trame['HCHP']."\r\n");
+      $datas['total_hp']  = preg_replace('`^[0]*`','',$trame['HCHP']); // conso total en Wh heure pleine, on supprime les 0 en debut de chaine
+
+      if($previous['total_hc'] == 0){
+        $datas['daily_hc'] = 0;
+      }
+      else{
+        $datas['daily_hc']  = ($datas['total_hc']-$previous['total_hc'])/1000; // conso du jour heure creuse = total aujourd'hui - total hier, on divise par 1000 pour avec un resultat en kWh
+      }
+
+      if($previous['total_hp'] == 0){
+        $datas['daily_hp'] = 0;
+      }
+      else{
+        $datas['daily_hp']  = ($datas['total_hp']-$previous['total_hp'])/1000; // conso du jour heure pleine = total aujourd'hui - total hier, on divise par 1000 pour avec un resultat en kWh
+      }
+
+      if($db->busyTimeout(5000)){ // stock les donnees
+        $db->exec("INSERT INTO conso (timestamp, total_hc, total_hp, daily_hc, daily_hp) VALUES (".$datas['timestamp'].", ".$datas['total_hc'].", ".$datas['total_hp'].", ".$datas['daily_hc'].", ".$datas['daily_hp'].");");
+        $success = True;
+      }
+
+      if($success == True){
+        echo("Break\r\n");
+        break;
+      }
     }
   }
 
