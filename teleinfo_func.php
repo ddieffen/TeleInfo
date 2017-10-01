@@ -81,11 +81,13 @@
       if($db->busyTimeout(5000)){ // stock les donnees
         if($datas['hchp'] != ""){
           echo("INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");");
-          $db->exec("INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");");
-          $success = True;
+          $success = $db->exec("INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");");
+          if(!$success){
+            error_log(time()." Transaction Failed:". $db->lastErrorMsg(), 3, "/var/log/apache2/error.log");
+          }
         }
       }
-
+      $db->close();
       if($success == True){
         echo("Break\r\n");
         break;
@@ -170,10 +172,14 @@
 
       if($db->busyTimeout(5000)){ // stock les donnees
         error_log(time()." 24\r\n", 3, "/var/log/apache2/error.log");
-        $db->exec("INSERT INTO conso (timestamp, total_hc, total_hp, daily_hc, daily_hp) VALUES (".$datas['timestamp'].", ".$datas['total_hc'].", ".$datas['total_hp'].", ".$datas['daily_hc'].", ".$datas['daily_hp'].");");
-        $success = True;
+        $query = "INSERT INTO conso (timestamp, total_hc, total_hp, daily_hc, daily_hp) VALUES (".$datas['timestamp'].", ".$datas['total_hc'].", ".$datas['total_hp'].", ".$datas['daily_hc'].", ".$datas['daily_hp'].");";
+        error_log(time()." ".$query, 3, "/var/log/apache2/error.log");
+        $success = $db->exec($query);
+        if(!$success){
+          error_log(time()." Transaction Failed:". $db->lastErrorMsg(), 3, "/var/log/apache2/error.log");
+        }
       }
-
+    $db->close();
       if($success == True){
         error_log(time()." 25\r\n", 3, "/var/log/apache2/error.log");
         echo("Break\r\n");
@@ -181,6 +187,21 @@
       }
     }
   }
+
+  function getLatestVA (){
+    global $sqlite;
+    $query = "SELECT * FROM puissance WHERE timestamp=(SELECT max(timestamp) FROM puissance);";
+    $db = new SQLite3($sqlite);
+    $results = $db->query($query);
+    $latestVA = "";
+    while($row = $results->fetchArray(SQLITE3_ASSOC)){
+      $latestVA = $row['va'];
+    }
+
+    return $latestVA;
+  }
+
+
 
   //
   //  recupere les donnees de puissance des $nb_days derniers jours et les met en forme pour les affichers sur le graphique

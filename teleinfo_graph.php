@@ -1,4 +1,4 @@
-<?php require_once('/var/www/html/teleinfo_func.php'); ?> 
+<?php require_once('/var/www/html/teleinfo_func.php'); ?>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <div id="puissance">
   <div id="chart_div"></div>
@@ -40,7 +40,7 @@
           'chartType': 'AreaChart',
           'containerId': 'chart_div',
           'options': {
-                             title: 'Consommation instantanée (VA)',
+                             title: 'Consommation instantanée <?php echo getLatestVA ();?> (VA)',
                              height : 400,
                              backgroundColor: '#FFF',
                              colors : ['#e0440e', '#375D81'],

@@ -81,6 +81,7 @@
             type: "POST",
             url: 'toogle-heater-on.php',
             success: function(data) {
+              toogle-heater-on.php
               alert('chauffage allumé');
             },
             error: function() {
@@ -96,6 +97,7 @@
             type: "POST",
             url: 'toogle-heater-off.php',
             success: function(data) {
+              toogle-heater-off.php
               alert('chauffage éteind');
             },
             error: function() {
