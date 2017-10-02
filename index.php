@@ -64,12 +64,9 @@
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
   </head>
   <body>
-    <?php
-      include('teleinfo_graph.php')
-    ?>
     <!-- Rounded switch -->
     <label class="switch">
-      <input type="checkbox" name="foo" value="bar" class="checkIt">
+      <input type="checkbox" name="foo" value="bar" class="checkIt" checked="True">
       <span class="slider round"></span>
     </label>
 
@@ -110,5 +107,8 @@
       }
     });
     </script>
+    <?php
+      include('teleinfo_graph.php')
+    ?>
   </body>
 </html>
