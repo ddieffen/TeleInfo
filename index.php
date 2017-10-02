@@ -64,12 +64,20 @@
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
   </head>
   <body>
-    <!-- Rounded switch -->
-    <label class="switch">
-      <input type="checkbox" name="foo" value="bar" class="checkIt" checked="True">
-      <span class="slider round"></span>
-    </label>
-
+    <table>
+    <TR>
+      <TD style="vertical-align:middle">
+      <!-- Rounded switch -->
+      <label class="switch">
+        <input type="checkbox" name="foo" value="bar" class="checkIt" checked="True">
+        <span class="slider round"></span>
+      </label>
+      </TD>
+      <TD style="vertical-align:middle">
+        Chauffage
+      </TD>
+    </TR>
+    </table>
     <script type="text/javascript">
     $('.checkIt').bind('click', function() {
       if($(this).is(":checked")) {
