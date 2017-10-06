@@ -1,1 +1,4 @@
-DirectoryIndex index.php
+AuthType Basic
+AuthName "My Protected Area"
+AuthUserFile /var/www/passwds/passwords
+Require valid-user

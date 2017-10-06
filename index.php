@@ -69,7 +69,7 @@
       <TD style="vertical-align:middle">
       <!-- Rounded switch -->
       <label class="switch">
-        <input type="checkbox" name="foo" value="bar" class="checkIt" checked="True">
+        <input type="checkbox" name="foo" value="bar" class="checkIt" <?php include('output-exec.php') ?> >
         <span class="slider round"></span>
       </label>
       </TD>

@@ -101,35 +101,22 @@
   //  enregistre la consommation en Wh
   //
   function handleConso () {
-    error_log(time()." 1\r\n", 3, "/var/log/apache2/error.log");
 
     global $sqlite;
-    error_log(time()." 2\r\n", 3, "/var/log/apache2/error.log");
-
     $success = False;
-    error_log(time()." 3\r\n", 3, "/var/log/apache2/error.log");
 
     for($i = 0; $i <= 10; $i++){
-      error_log(time()." 4\r\n", 3, "/var/log/apache2/error.log");
       echo("Trying to handle Conso #".$i."\r\n");
-      error_log(time()." 5\r\n", 3, "/var/log/apache2/error.log");
       $db = new SQLite3($sqlite);
-      error_log(time()." 6\r\n", 3, "/var/log/apache2/error.log");
       $db->exec('CREATE TABLE IF NOT EXISTS conso (timestamp INTEGER, total_hc INTEGER, total_hp INTEGER, daily_hc REAL, daily_hp REAL);'); // cree la table conso si elle n'existe pas
-      error_log(time()." 7\r\n", 3, "/var/log/apache2/error.log");
       $trame     = getTeleinfo (); // recupere une trame teleinfo
-      error_log(time()." 8\r\n", 3, "/var/log/apache2/error.log");
       $today     = strtotime('today 00:00:00');
-      error_log(time()." 9\r\n", 3, "/var/log/apache2/error.log");
       $yesterday = strtotime("-1 day 00:00:00");
-      error_log(time()." 10\r\n", 3, "/var/log/apache2/error.log");
       // recupere la conso totale enregistree la veille pour pouvoir calculer la difference et obtenir la conso du jour
       if($db->busyTimeout(5000)){
-        error_log(time()." 11\r\n", 3, "/var/log/apache2/error.log");
         $previous = $db->query("SELECT * FROM conso WHERE timestamp = '".$yesterday."';")->fetchArray(SQLITE3_ASSOC);
       }
       if(empty($previous)){
-        error_log(time()." 12\r\n", 3, "/var/log/apache2/error.log");
         $previous = array();
         $previous['timestamp'] = $yesterday;
         $previous['total_hc']  = 0;
@@ -137,43 +124,30 @@
         $previous['daily_hc']  = 0;
         $previous['daily_hp']  = 0;
       }
-      error_log(time()." 13\r\n", 3, "/var/log/apache2/error.log");
       $datas = array();
-      error_log(time()." 14\r\n", 3, "/var/log/apache2/error.log");
       $datas['query']     = 'hchp';
-      error_log(time()." 15\r\n", 3, "/var/log/apache2/error.log");
       $datas['timestamp'] = $today;
-      error_log(time()." 16\r\n", 3, "/var/log/apache2/error.log");
       echo("trame HCHC: ".$trame['HCHC']."\r\n");
-      error_log(time()." 17\r\n", 3, "/var/log/apache2/error.log");
       $datas['total_hc']  = preg_replace('`^[0]*`','',$trame['HCHC']); // conso total en Wh heure creuse, on supprime les 0 en debut de chaine
-      error_log(time()." 18\r\n", 3, "/var/log/apache2/error.log");
       echo("trame HCHP: ".$trame['HCHP']."\r\n");
-      error_log(time()." 19\r\n", 3, "/var/log/apache2/error.log");
       $datas['total_hp']  = preg_replace('`^[0]*`','',$trame['HCHP']); // conso total en Wh heure pleine, on supprime les 0 en debut de chaine
 
       if($previous['total_hc'] == 0){
-        error_log(time()." 20\r\n", 3, "/var/log/apache2/error.log");
         $datas['daily_hc'] = 0;
       }
       else{
-        error_log(time()." 21\r\n", 3, "/var/log/apache2/error.log");
         $datas['daily_hc']  = ($datas['total_hc']-$previous['total_hc'])/1000; // conso du jour heure creuse = total aujourd'hui - total hier, on divise par 1000 pour avec un resultat en kWh
       }
 
       if($previous['total_hp'] == 0){
-        error_log(time()." 22\r\n", 3, "/var/log/apache2/error.log");
         $datas['daily_hp'] = 0;
       }
       else{
-        error_log(time()." 23\r\n", 3, "/var/log/apache2/error.log");
         $datas['daily_hp']  = ($datas['total_hp']-$previous['total_hp'])/1000; // conso du jour heure pleine = total aujourd'hui - total hier, on divise par 1000 pour avec un resultat en kWh
       }
 
       if($db->busyTimeout(5000)){ // stock les donnees
-        error_log(time()." 24\r\n", 3, "/var/log/apache2/error.log");
         $query = "INSERT INTO conso (timestamp, total_hc, total_hp, daily_hc, daily_hp) VALUES (".$datas['timestamp'].", ".$datas['total_hc'].", ".$datas['total_hp'].", ".$datas['daily_hc'].", ".$datas['daily_hp'].");";
-        error_log(time()." ".$query, 3, "/var/log/apache2/error.log");
         $success = $db->exec($query);
         if(!$success){
           error_log(time()." Transaction Failed:". $db->lastErrorMsg(), 3, "/var/log/apache2/error.log");
@@ -181,7 +155,6 @@
       }
     $db->close();
       if($success == True){
-        error_log(time()." 25\r\n", 3, "/var/log/apache2/error.log");
         echo("Break\r\n");
         break;
       }
@@ -199,38 +172,6 @@
     }
 
     return $latestVA;
-  }
-
-
-
-  //
-  //  recupere les donnees de puissance des $nb_days derniers jours et les met en forme pour les affichers sur le graphique
-  //
-  function getDatasPuissance ($nb_days) {
-    global $sqlite;
-    $months    = array('01' => 'janv', '02' => 'fev', '03' => 'mars', '04' => 'avril', '05' => 'mai', '06' => 'juin', '07' => 'juil', '08' => 'aout', '09' => 'sept', '10' => 'oct', '11' => 'nov', '12' => 'dec');
-    $now  = time();
-    $past = strtotime("-$nb_days day", $now);
-
-    $db = new SQLite3($sqlite);
-    $results = $db->query("SELECT * FROM puissance WHERE timestamp > $past ORDER BY timestamp ASC;");
-
-    $sums = array();
-    $days = array();
-    $datas = array();
-
-    while($row = $results->fetchArray(SQLITE3_ASSOC)){
-      $year   = date("Y", $row['timestamp']);
-      $month  = date("n", $row['timestamp']-1);
-      $day    = date("j", $row['timestamp']);
-      $hour   = date("G", $row['timestamp']);
-      $minute = date("i", $row['timestamp']);
-      $second = date("s", $row['timestamp']);
-      $datas[] = "[{v:new Date($year, $month, $day, $hour, $minute, $second), f:'".date("j", $row['timestamp'])." ".$months[date("m", $row['timestamp'])]." ".date("H\hi", $row['timestamp'])."'}, {v:".$row['va'].", f:'".$row['va']." V.A'}]";
-
-    }
-
-    return implode(', ', $datas);
   }
 
   //
@@ -275,9 +216,11 @@
     $data = array();
 
     while($row = $results->fetchArray(SQLITE3_ASSOC)){
-      $year   = date("Y", $row['timestamp']);
-      $month = date("n", $row['timestamp'])-1;
-      $day    = date("j", $row['timestamp']);
+      //-86400 pour enlever un jour puisque les consommation sont sommées a minuit pour la journee
+      //autrement elles apparaissent dans le graph comme les conso de la journee en cours
+      $year = date("Y", $row['timestamp']-86400);
+      $month = date("n", $row['timestamp']-86400)-1;
+      $day = date("j", $row['timestamp']-86400);
       $data[] = "[new Date($year, $month, $day), {v:".$row['daily_hp'].", f:'".$row['daily_hp']." kVA'}, {v:".$row['daily_hc'].", f:'".$row['daily_hc']." kVA'}]";
     }
 

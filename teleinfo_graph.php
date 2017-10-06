@@ -1,8 +1,11 @@
 <?php require_once('/var/www/html/teleinfo_func.php'); ?>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <div id="puissance">
-  <div id="chart_div"></div>
-  <div id="filter_div"></div> </div> <div id="daily_div"></div> <div id="monthly_div"></div> 
+    <div id="chart_div"></div>
+    <div id="filter_div"></div>
+  </div>
+  <div id="daily_div"></div>
+  <div id="monthly_div"></div>
   <script type="text/javascript">
   google.charts.load('current', {packages: ['corechart', 'controls'], 'language': 'fr'});
   google.charts.setOnLoadCallback(drawDashboard);
@@ -11,7 +14,7 @@
         data.addColumn('date', 'Date');
         data.addColumn('number', 'V.A');
         data.addColumn({type:'string', role:'style'});
-        data.addRows([<?php echo getInstantConsumption (5); ?>]);
+        data.addRows([<?php echo getInstantConsumption (3); ?>]);
     var dashboard = new google.visualization.Dashboard(
             document.getElementById('puissance'));
     var rangeSlider = new google.visualization.ControlWrapper({
@@ -19,7 +22,7 @@
           'containerId': 'filter_div',
           'options': {
              filterColumnLabel : 'Date',
-             ui : {chartType: 'LineChart', chartOptions: {
+             ui : {chartType: 'AreaChart', chartOptions: {
                              height : 80,
                              backgroundColor: '#FFF',
                              colors : ['#375D81', '#ABC8E2'],
@@ -27,7 +30,7 @@
                              focusTarget : 'category',
                              lineWidth : '1',
                              'legend': {'position': 'none'},
-                             'hAxis': {'textPosition': 'in'},
+                             'hAxis': {'textPosition': 'out'},
                              'vAxis': {
                                'textPosition': 'none',
                                'gridlines': {'color': 'none'}
@@ -35,7 +38,7 @@
                  }}
           }
         });
-        
+
     var lineChart = new google.visualization.ChartWrapper({
           'chartType': 'AreaChart',
           'containerId': 'chart_div',
@@ -48,16 +51,34 @@
                              focusTarget : 'category',
                              lineWidth : '1',
                              legend : {position: 'bottom', alignment: 'center', textStyle: {color: '#333', fontSize: 16}},
-                             vAxis : {textStyle : {color : '#555', fontSize : '16'}, gridlines : {color: '#CCC', count: 'auto'}, baselineColor : '#AAA', minValue : 0},
-                             hAxis : {textStyle : {color : '#555'}, gridlines : {color: '#DDD'}}
-          }
+                             vAxis : {
+                               textStyle : {
+                                 color : '#555',
+                                 fontSize : '16'
+                               },
+                               gridlines : {
+                                 color: '#CCC',
+                                 count: 'auto'
+                               },
+                               baselineColor : '#AAA',
+                               minValue : 0
+                             },
+                             hAxis : {
+                               textStyle : {
+                                 color : '#555'
+                               },
+                               gridlines : {
+                                 color: '#DDD'
+                               }
+                             }
+                   }
         });
     dashboard.bind(rangeSlider, lineChart);
     dashboard.draw(data);
   }
-  
+
   google.charts.setOnLoadCallback(drawChart);
-  
+
   function drawChart() {
     var data = new google.visualization.DataTable();
     data.addColumn('date', 'Date');
@@ -75,7 +96,7 @@
                    vAxis : {textStyle : {color : '#555', fontSize : '16'}, gridlines : {color: '#CCC', count: 'auto'}, baselineColor : '#AAA', minValue : 0},
                    hAxis : {textStyle : {color : '#555'}, gridlines : {color: '#DDD'}}
               };
-function floorDate(date) {
+  function floorDate(date) {
       var month = new Date(date.getFullYear(), date.getMonth());
       return month;
     }
@@ -94,6 +115,7 @@ function floorDate(date) {
         aggregation: google.visualization.data.sum,
         type: 'number'
     }]);
+
     // Format dates
     var formatter = new google.visualization.DateFormat({pattern: "MMM ' 'yyyy"});
     formatter.format(monthlyData, 0);
