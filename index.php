@@ -69,28 +69,51 @@
       <TD style="vertical-align:middle">
       <!-- Rounded switch -->
       <label class="switch">
-        <input type="checkbox" name="foo" value="bar" class="checkIt" <?php include('output-exec.php') ?> >
+        <input type="checkbox" class="checkItSalon" <?php include('heat-salon-checked.php') ?> >
         <span class="slider round"></span>
       </label>
       </TD>
       <TD style="vertical-align:middle">
-        Chauffage
+        Chauffage Salon
+      </TD>
+    </TR>
+     <TR>
+      <TD style="vertical-align:middle">
+      <!-- Rounded switch -->
+      <label class="switch">
+        <input type="checkbox" class="checkItChambres" <?php include('heat-chambres-checked.php') ?> >
+        <span class="slider round"></span>
+      </label>
+      </TD>
+      <TD style="vertical-align:middle">
+        Chauffage Chambres
+      </TD>
+    </TR>
+    <TR>
+      <TD style="vertical-align:middle">
+      <!-- Rounded switch -->
+      <label class="switch">
+        <input type="checkbox" class="checkItAutres" <?php include('heat-autres-checked.php') ?> >
+        <span class="slider round"></span>
+      </label>
+      </TD>
+      <TD style="vertical-align:middle">
+        Chauffage Autres
       </TD>
     </TR>
     </table>
     <script type="text/javascript">
-    $('.checkIt').bind('click', function() {
+    $('.checkItSalon').bind('click', function() {
       if($(this).is(":checked")) {
           // checkbox is checked
           $.ajax({
             type: "POST",
-            url: 'toogle-heater-on.php',
+            url: 'heat-salon-on.php',
             success: function(data) {
-              toogle-heater-on.php
-              alert('chauffage allumé');
+
             },
             error: function() {
-              alert('erreur allumage chauffage');
+
             },
             complete: function() {
               //alert('chauffage allumé fini');
@@ -100,13 +123,12 @@
           // checkbox is not checked
           $.ajax({
             type: "POST",
-            url: 'toogle-heater-off.php',
+            url: 'heat-salon-off.php',
             success: function(data) {
-              toogle-heater-off.php
-              alert('chauffage éteind');
+              //alert('chauffage salond éteind');
             },
             error: function() {
-              alert('erreur extinction chauffage');
+              //alert('erreur extinction chauffage salond');
             },
             complete: function() {
               //alert('chauffage éteind fini');
@@ -114,6 +136,75 @@
           });
       }
     });
+
+    $('.checkItAutres').bind('click', function() {
+      if($(this).is(":checked")) {
+          // checkbox is checked
+          $.ajax({
+            type: "POST",
+            url: 'heat-autres-on.php',
+            success: function(data) {
+              //alert('chauffage autres allumé');
+            },
+            error: function() {
+              //alert('erreur allumage chauffage autres');
+            },
+            complete: function() {
+              //alert('chauffage allumé fini');
+            }
+          });
+      } else {
+          // checkbox is not checked
+          $.ajax({
+            type: "POST",
+            url: 'heat-autres-off.php',
+            success: function(data) {
+              //alert('chauffage autres éteind');
+            },
+            error: function() {
+              //alert('erreur extinction chauffage autres');
+            },
+            complete: function() {
+              //alert('chauffage éteind fini');
+            }
+          });
+      }
+    });
+
+    $('.checkItChambres').bind('click', function() {
+      if($(this).is(":checked")) {
+          // checkbox is checked
+          $.ajax({
+            type: "POST",
+            url: 'heat-chambres-on.php',
+            success: function(data) {
+              //alert('chauffage allumé');
+            },
+            error: function() {
+              //alert('erreur allumage chauffage chambres');
+            },
+            complete: function() {
+              //alert('chauffage allumé fini');
+            }
+          });
+      } else {
+          // checkbox is not checked
+          $.ajax({
+            type: "POST",
+            url: 'heat-chambres-off.php',
+            success: function(data) {
+              //alert('chauffage éteind');
+            },
+            error: function() {
+              //alert('erreur extinction chauffage chambres');
+            },
+            complete: function() {
+              //alert('chauffage éteind fini');
+            }
+          });
+      }
+    });
+
     </script>
     <?php
       include('teleinfo_graph.php')

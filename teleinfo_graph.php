@@ -50,7 +50,7 @@
                              curveType : 'function',
                              focusTarget : 'category',
                              lineWidth : '1',
-                             legend : {position: 'bottom', alignment: 'center', textStyle: {color: '#333', fontSize: 16}},
+                             legend : {'position': 'none'},
                              vAxis : {
                                textStyle : {
                                  color : '#555',
