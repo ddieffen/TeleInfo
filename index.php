@@ -76,6 +76,9 @@
       <TD style="vertical-align:middle">
         Chauffage Salon
       </TD>
+      <TD>
+        06h00-06h30 & 18h30-22h00
+      </TD>
     </TR>
      <TR>
       <TD style="vertical-align:middle">
@@ -88,6 +91,9 @@
       <TD style="vertical-align:middle">
         Chauffage Chambres
       </TD>
+      <TD>
+        22h30-6h30
+      </TD>
     </TR>
     <TR>
       <TD style="vertical-align:middle">
@@ -99,6 +105,9 @@
       </TD>
       <TD style="vertical-align:middle">
         Chauffage Autres
+      </TD>
+      <TD>
+        ____-9h00
       </TD>
     </TR>
     </table>
