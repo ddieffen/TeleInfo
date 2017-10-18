@@ -86,7 +86,7 @@
     data.addColumn('number', 'Heures creuses');
     data.addRows([<?php echo getDailyData (365); ?>]);
     var dailyChartOptions = {
-                   title: 'Consommation journalière (kVA)',
+                   title: 'Consommation journalière (kVAh)',
                    height : 200,
                    backgroundColor: '#FFF',
                    colors : ['#e0440e', '#375D81'],
@@ -120,7 +120,7 @@
     var formatter = new google.visualization.DateFormat({pattern: "MMM ' 'yyyy"});
     formatter.format(monthlyData, 0);
     var monthlyChartOptions = {
-                   title: 'Consommation mensuelle (kVA)',
+                   title: 'Consommation mensuelle (kVAh)',
                    height : 200,
                    backgroundColor: '#FFF',
                    colors : ['#e0440e', '#375D81'],

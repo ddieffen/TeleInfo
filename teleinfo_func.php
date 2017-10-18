@@ -221,7 +221,7 @@
       $year = date("Y", $row['timestamp']-86400);
       $month = date("n", $row['timestamp']-86400)-1;
       $day = date("j", $row['timestamp']-86400);
-      $data[] = "[new Date($year, $month, $day), {v:".$row['daily_hp'].", f:'".$row['daily_hp']." kVA'}, {v:".$row['daily_hc'].", f:'".$row['daily_hc']." kVA'}]";
+      $data[] = "[new Date($year, $month, $day), {v:".$row['daily_hp'].", f:'".$row['daily_hp']." kVAh'}, {v:".$row['daily_hc'].", f:'".$row['daily_hc']." kVAh'}]";
     }
 
     return implode(', ', $data);
