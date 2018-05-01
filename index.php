@@ -92,7 +92,7 @@
         Chauffage Chambres
       </TD>
       <TD>
-        22h30-6h30
+        21h00-6h30
       </TD>
     </TR>
     <TR>
@@ -110,6 +110,22 @@
         ____-9h00
       </TD>
     </TR>
+    <TR>
+      <TD style="vertical-align:middle">
+      <!-- Rounded switch -->
+      <label class="switch">
+        <input type="checkbox" class="checkItVac" <?php include('mode-vac-checked.php') ?> >
+        <span class="slider round"></span>
+      </label>
+      </TD>
+      <TD style="vertical-align:middle">
+        Mode Vacances
+      </TD>
+      <TD>
+        
+      </TD>
+    </TR>
+
     </table>
     <script type="text/javascript">
     $('.checkItSalon').bind('click', function() {
@@ -201,6 +217,41 @@
           $.ajax({
             type: "POST",
             url: 'heat-chambres-off.php',
+            success: function(data) {
+              //alert('chauffage éteind');
+            },
+            error: function() {
+              //alert('erreur extinction chauffage chambres');
+            },
+            complete: function() {
+              //alert('chauffage éteind fini');
+            }
+          });
+      }
+    });
+
+
+    $('.checkItVac').bind('click', function() {
+      if($(this).is(":checked")) {
+          // checkbox is checked
+          $.ajax({
+            type: "POST",
+            url: 'mode-vac-on.php',
+            success: function(data) {
+              //alert('chauffage allumé');
+            },
+            error: function() {
+              //alert('erreur allumage chauffage chambres');
+            },
+            complete: function() {
+              //alert('chauffage allumé fini');
+            }
+          });
+      } else {
+          // checkbox is not checked
+          $.ajax({
+            type: "POST",
+            url: 'mode-vac-off.php',
             success: function(data) {
               //alert('chauffage éteind');
             },
