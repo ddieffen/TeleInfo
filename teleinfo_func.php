@@ -7,7 +7,7 @@
   //
   function getTeleinfo () {
 
-    $handle = fopen ('/dev/ttyAMA0', "r"); // ouverture du flux
+    $handle = fopen ('/dev/ttyS0', "r"); // ouverture du flux
 
     while (fread($handle, 1) != chr(2)); // on attend la fin d'une trame pour commencer a avec la trame suivante
 
@@ -181,7 +181,6 @@
     global $sqlite;
     $now  = time();
     $past = strtotime("-$nb_days day", $now);
-
     $db = new SQLite3($sqlite);
     $results = $db->query("SELECT * FROM puissance WHERE timestamp > $past ORDER BY timestamp ASC;");
 

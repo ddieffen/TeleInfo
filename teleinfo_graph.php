@@ -1,4 +1,6 @@
-<?php require_once('/var/www/html/teleinfo_func.php'); ?>
+<?php require_once('/var/www/html/teleinfo_func.php');
+ini_set('display_errors', '1');
+?>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <div id="puissance">
     <div id="chart_div"></div>
@@ -14,7 +16,7 @@
         data.addColumn('date', 'Date');
         data.addColumn('number', 'V.A');
         data.addColumn({type:'string', role:'style'});
-        data.addRows([<?php echo getInstantConsumption (3); ?>]);
+        data.addRows([<?php echo getInstantConsumption(3); ?>]);
     var dashboard = new google.visualization.Dashboard(
             document.getElementById('puissance'));
     var rangeSlider = new google.visualization.ControlWrapper({
