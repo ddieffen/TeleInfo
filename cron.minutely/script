@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#sudo /home/dietpi/network-monitor.sh
+sudo php /var/www/html/teleinfo_puissance.php
