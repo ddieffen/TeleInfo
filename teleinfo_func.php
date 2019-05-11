@@ -1,6 +1,6 @@
 <?php
 
-  $sqlite = '/home/pi/teleinfo/teleinfo.sqlite';
+  $sqlite = '/home/dietpi/teleinfo.sqlite';
 
   //
   //  renvoie une trame teleinfo complete sous forme d'array
@@ -56,8 +56,13 @@
 
       $db = new SQLite3($sqlite);
       $db->exec('CREATE TABLE IF NOT EXISTS puissance (timestamp INTEGER, hchp TEXT, va REAL, iinst REAL, watt REAL);'); // cree la table puissance si elle n'existe pas
+      $db->exec('CREATE TABLE IF NOT EXISTS energytot (timestamp INTEGER, vah REAL);');
+      $db->exec('CREATE TABLE IF NOT EXISTS weather (timestamp INTEGER, text REAL, hext REAL, sunext REAL, tone REAL, hone REAL);'); // cree la table météo si elle n'existe pas
+      $db->exec('CREATE TABLE IF NOT EXISTS conso (timestamp INTEGER, total_hc INTEGER, total_hp INTEGER, daily_hc REAL, daily_hp REAL);'); // cree la table conso si elle n'existe pas
 
       $trame = getTeleinfo (); // recupere une trame teleinfo
+
+      echo("trame recue");
 
       $datas = array();
       $datas['timestamp'] = time();
@@ -78,10 +83,47 @@
       echo("datas iinst: ".$datas['iinst']."\r\n");
       $datas['watt']      = $datas['iinst']*220; // intensite en A X 220 V
 
+      echo("trame HCHC: ".$trame['HCHC']."\r\n");
+      $vahc = intval(preg_replace('`^[0]*`','',$trame['HCHC'])); // conso total en Wh heure creuse, on supprime les 0 en debut de chaine
+      echo("trame HCHP: ".$trame['HCHP']."\r\n");
+      $vahp = intval(preg_replace('`^[0]*`','',$trame['HCHP'])); // conso total en Wh heure pleine, on supprime les 0 en debut de chaine
+      $consototale = $vahp + $vahc;
+      echo("Conso totale actuelle: ".$consototale."\r\n");
+
+      if($db->busyTimeout(5000)){
+        $previous = $db->query("SELECT * FROM energytot;")->fetchArray(SQLITE3_ASSOC);
+      }
+      if(empty($previous)){
+        echo("Conso total précédente inconnue, calcul de puissance basé sur la conso et l'intervalle de temp impossible");
+      } else {
+        $consototaleprecedente = intval($previous['vah']);
+        echo("Conso totale preceden: ".$consototaleprecedente."\r\n");
+        echo("Timestamp actuel     : ".intval($datas['timestamp'])."\r\n");
+        echo("Timestamp precedent  : ".intval($previous['timestamp'])."\r\n");
+        $pmoyenne = ($consototale-$consototaleprecedente)*3600/(intval($datas['timestamp'])-intval($previous['timestamp']));
+        echo("Puissance moyenne: ".$pmoyenne."\r\n");
+        $datas['watt'] = $pmoyenne;
+      }
+
       if($db->busyTimeout(5000)){ // stock les donnees
         if($datas['hchp'] != ""){
-          echo("INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");");
-          $success = $db->exec("INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");");
+          $command = "DELETE FROM energytot;";
+          echo($command);
+          $success = $db->exec($command);
+          if(!$success){
+            error_log(time()." Transaction Failed:". $db->lastErrorMsg(), 3, "/var/log/apache2/error.log");
+          }
+
+          $command = "INSERT INTO energytot (timestamp, vah) VALUES (".$datas['timestamp'].", '".$consototale."');";
+          echo($command);
+          $success = $db->exec($command);
+          if(!$success){
+            error_log(time()." Transaction Failed:". $db->lastErrorMsg(), 3, "/var/log/apache2/error.log");
+          }
+
+          $command = "INSERT INTO puissance (timestamp, hchp, va, iinst, watt) VALUES (".$datas['timestamp'].", '".$datas['hchp']."', ".$datas['va'].", ".$datas['iinst'].", ".$datas['watt'].");";
+          echo($command);
+          $success = $db->exec($command);
           if(!$success){
             error_log(time()." Transaction Failed:". $db->lastErrorMsg(), 3, "/var/log/apache2/error.log");
           }
@@ -168,7 +210,7 @@
     $results = $db->query($query);
     $latestVA = "";
     while($row = $results->fetchArray(SQLITE3_ASSOC)){
-      $latestVA = $row['va'];
+      $latestVA = $row['watt'];
     }
 
     return $latestVA;
@@ -194,8 +236,9 @@
       $minute = date("i", $row['timestamp']);
       $second = date("s", $row['timestamp']);
       if ($row['hchp'] == 'HP') {$hchp_indicator ='color: #e0440e';} else {$hchp_indicator = 'color: #375D81';}
-      $data[] = "[{v:new Date($year, $month, $day, $hour, $minute, $second), f:'".date("j", $row['timestamp'])." ".date("M", $row['timestamp'])." ".date("H\hi", $row['timestamp'])."'}, 
-                  {v:".$row['va'].", f:'".$row['va']." V.A'}, '".$hchp_indicator."']";
+      $data[] = "[{v:new Date($year, $month, $day, $hour, $minute, $second), f:'".date("j", $row['timestamp'])." ".date("M"
+                  , $row['timestamp'])." ".date("H\hi", $row['timestamp'])."'},
+                  {v:".$row['watt'].", f:'".$row['watt']." V.A'}, '".$hchp_indicator."']";
     }
 
     return implode(', ', $data);
