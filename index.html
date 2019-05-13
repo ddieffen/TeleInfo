@@ -1,15 +1,29 @@
 <html>
   <head>
+    <meta http-equiv="refresh" content="120" />
     <title>Consommation</title>
     <style>
-    .stylePower {
+    .stylePowerHP {
+      fill: none;
+      stroke: red;
+      stroke-width: 1px;
+    }
+    .stylePowerHC {
       fill: none;
       stroke: steelblue;
-      stroke-width: 2px;
+      stroke-width: 1px;
+    }
+    .styleHPArea {
+      fill: red;
+      fill-opacity: 0.5;
+    }
+    .styleHCArea {
+      fill: steelblue;
+      fill-opacity: 0.5;
     }
     .styleTemp {
       fill: none;
-      stroke: coral;
+      stroke: black;
       stroke-width: 2px;
     }
     .styleSun {
@@ -25,7 +39,7 @@
       fill: steelblue;
     }
     .axisCoral text{
-      fill: coral;
+      fill: black;
     }
    </style>
   </head>
@@ -43,9 +57,33 @@
     var y = d3.scaleLinear().range([height, 0]);
     var y1 = d3.scaleLinear().range([height, 0]);
 
-    var powerLine = d3.line()
+    var powerLineHP = d3.line()
+      .defined(function(d) {
+        return d.c == "HP";
+      })
       .x(function(d) { return x(d.Date);})
       .y(function(d) { return y(d.Power); });
+    var HPArea = d3.area()
+      .defined(function(d) {
+        return d.c == "HP";
+      })
+      .x(function(d) { return x(d.Date); })
+      .y0(height)
+      .y1(function(d) { return y(d.Power); });
+
+    var powerLineHC = d3.line()
+      .defined(function(d) {
+        return d.c == "HC";
+      })
+      .x(function(d) { return x(d.Date);})
+      .y(function(d) { return y(d.Power); });
+    var HCArea = d3.area()
+      .defined(function(d) {
+        return d.c == "HC";
+      })
+      .x(function(d) { return x(d.Date); })
+      .y0(height)
+      .y1(function(d) { return y(d.Power); });
 
     var tempLine = d3.line()
       .defined(function(d) {
@@ -97,8 +135,23 @@
       //add the valueline path
       svg.append("path")
         .data([data])
-        .attr("class", "stylePower")
-        .attr("d", powerLine);
+        .attr("class", "stylePowerHC")
+        .attr("d", powerLineHC);
+      //add the area for sun power
+      svg.append("path")
+       .data([data])
+       .attr("class", "styleHCArea")
+       .attr("d", HCArea);
+      //add the valueline path
+      svg.append("path")
+        .data([data])
+        .attr("class", "stylePowerHP")
+        .attr("d", powerLineHP);
+      //add the area for sun power
+      svg.append("path")
+       .data([data])
+       .attr("class", "styleHPArea")
+       .attr("d", HPArea);
 
       //add the X axis
       svg.append("g")

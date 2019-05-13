@@ -1,0 +1,50 @@
+#!/bin/bash
+{
+	#////////////////////////////////////
+	# DietPi Cron.Daily script
+	#
+	#////////////////////////////////////
+	#
+	# Info:
+	# - Location /etc/cron.daily/dietpi
+	#
+	#////////////////////////////////////
+
+	#----------------------------------------------------------------
+	# Main Loop
+	#----------------------------------------------------------------
+	#Time sync update, if mode 2 (daily) is detected
+	if grep -qi '^[[:blank:]]*CONFIG_NTP_MODE=2' /DietPi/dietpi.txt; then
+
+		/DietPi/dietpi/func/run_ntpd 1 &> /dev/null &
+
+	fi
+	#----------------------------------------------------------------
+	#Check/Update DietPi
+	if grep -qi '^[[:blank:]]*CONFIG_CHECK_DIETPI_UPDATES=1' /DietPi/dietpi.txt; then
+
+		# - Check and update
+		if grep -qi '^[[:blank:]]*CONFIG_AUTO_DIETPI_UPDATES=1' /DietPi/dietpi.txt; then
+
+			/DietPi/dietpi/dietpi-update 1
+
+		# - Check only
+		else
+
+			/DietPi/dietpi/dietpi-update 2 &> /dev/null &
+
+		fi
+
+	fi
+	#----------------------------------------------------------------
+	#DietPi-Sync daily
+	if [[ -f /DietPi/dietpi/.dietpi-sync_settings ]] &&
+		grep -qi 'SYNC_CRONDAILY=1' /DietPi/dietpi/.dietpi-sync_settings; then
+
+		/DietPi/dietpi/dietpi-sync 1 &> /dev/null &
+
+	fi
+	#----------------------------------------------------------------
+	exit
+	#----------------------------------------------------------------
+}

@@ -1,0 +1,5 @@
+#!/bin/bash
+echo "Seelp 25"
+sleep 25
+echo "At work"
+sudo php /var/www/html/teleinfo_conso.php

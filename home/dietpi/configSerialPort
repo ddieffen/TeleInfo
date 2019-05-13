@@ -1,0 +1,2 @@
+#!/bin/bash
+stty 1200 cs7 evenp cstopb -igncr -inlcr -brkint -icrnl -opost -isig -icanon -iexten -F /dev/ttyS0

@@ -26,9 +26,8 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
       $totalHP=$totalHP/$somme;
       $totalHC=$totalHC/$somme;
 
-      $data[] = "{ \"hp\": ".$totalHP.", \"hc\": "
-                .$totalHC."}";
-
+      $data[] = "{ \"label\": \"hp\", \"value\": ".$totalHP."}, "
+               ."{ \"label\": \"hc\", \"value\": ".$totalHC."}";
     }
 
     return "[ ".implode(', ', $data)."]";

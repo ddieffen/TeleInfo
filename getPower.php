@@ -16,9 +16,9 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
 
     while($row = $results->fetchArray(SQLITE3_ASSOC)){
       if ($row['hchp'] == 'HP')
-        {$hchp_indicator = "#e0440e";}
+        {$hchp_indicator = "HP";}
       else
-        {$hchp_indicator = "#375D81";}
+        {$hchp_indicator = "HC";}
 
       $data[] = "{ \"t\": ".$row['timestamp'].", \"p\": "
                 .$row['watt'].", \"c\": \"".$hchp_indicator."\"}";
