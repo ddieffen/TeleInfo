@@ -17,21 +17,20 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
 
     $totalHP = 0;
     $totalHC = 0;
+    $somme = 0;
     while($row = $results->fetchArray(SQLITE3_ASSOC)){
-      $totalHP = $row['SUM(daily_hc)'];
-      $totalHC = $row['SUM(daily_hp)'];
+      $totalHP = floatval($row['SUM(daily_hc)']);
+      $totalHC = floatval($row['SUM(daily_hp)']);
 
       $somme = $totalHP + $totalHC;
-
-      $totalHP=$totalHP/$somme;
-      $totalHC=$totalHC/$somme;
-
-      $data[] = "{ \"label\": \"HP\", \"value\": ".$totalHP."}, "
-               ."{ \"label\": \"HC\", \"value\": ".$totalHC."}";
     }
 
-    return "[ ".implode(', ', $data)."]";
-  }
+    $a = "Tarif HP/HC = 123.60E + $totalHP * 0.1580E + $totalHC * 0.1230E <br>";
+    $b = "            =".strval(123.60+$totalHP*0.1580+$totalHC*0.1230)."E <br>";
+    $c = "Tarif Base  = 110.52E + $somme * 0.1452E <br>";
+    $d = "            =".strval(110.52+$somme*0.1452)."E <br>";
+    return $a.$b.$c.$d;
+ }
 
 echo getHPHCShare(365);
 

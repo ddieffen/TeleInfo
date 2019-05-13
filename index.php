@@ -52,6 +52,7 @@
     <script src="powerChart.js"></script>
     <br>
     <script src="hphcAnalysis.js"></script>
+    <br>
     <?php include "getAnnualCost.php" ?>
   </body>
 </html>
