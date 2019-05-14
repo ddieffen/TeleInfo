@@ -19,8 +19,8 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
     $totalHC = 0;
     $somme = 0;
     while($row = $results->fetchArray(SQLITE3_ASSOC)){
-      $totalHP = floatval($row['SUM(daily_hc)']);
-      $totalHC = floatval($row['SUM(daily_hp)']);
+      $totalHP = floatval($row['SUM(daily_hp)']);
+      $totalHC = floatval($row['SUM(daily_hc)']);
 
       $somme = $totalHP + $totalHC;
     }
