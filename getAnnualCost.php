@@ -25,10 +25,10 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
       $somme = $totalHP + $totalHC;
     }
 
-    $a = "Tarif HP/HC = 123.60E + $totalHP * 0.1580E + $totalHC * 0.1230E <br>";
-    $b = "            =".strval(123.60+$totalHP*0.1580+$totalHC*0.1230)."E <br>";
-    $c = "Tarif Base  = 110.52E + $somme * 0.1452E <br>";
-    $d = "            =".strval(110.52+$somme*0.1452)."E <br>";
+    $a = "Tarif HP/HC = 123.60&euro; + $totalHP kWh * 0.1580&euro; + $totalHC kWh * 0.1230&euro; <br>";
+    $b = "            =".strval(123.60+$totalHP*0.1580+$totalHC*0.1230)."&euro; <br>";
+    $c = "Tarif Base  = 110.52&euro; + $somme kWh * 0.1452&euro; <br>";
+    $d = "            =".strval(110.52+$somme*0.1452)."&euro; <br>";
     return $a.$b.$c.$d;
  }
 
