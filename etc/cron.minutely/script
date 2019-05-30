@@ -2,3 +2,4 @@
 
 #sudo /home/dietpi/network-monitor.sh
 sudo php /var/www/html/teleinfo_puissance.php
+sudo python3 /home/dietpi/mitemp/BLETemps.py
