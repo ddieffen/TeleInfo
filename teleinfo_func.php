@@ -7,7 +7,7 @@
   //
   function getTeleinfo () {
 
-    $handle = fopen ('/dev/ttyS0', "r"); // ouverture du flux
+    $handle = fopen ('/dev/serial0', "r"); // ouverture du flux
 
     while (fread($handle, 1) != chr(2)); // on attend la fin d'une trame pour commencer a avec la trame suivante
 

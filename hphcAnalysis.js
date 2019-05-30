@@ -1,7 +1,7 @@
 //set the margins of the canevas
-var marginb = {top: 20, right: 20, bottom: 70, left:40},
+var marginb = {top: 20, right: 20, bottom: 20, left:40},
     widthb = 150 - marginb.left - marginb.right,
-    heightb = 200 - marginb.top - marginb.bottom;
+    heightb = 180 - marginb.top - marginb.bottom;
 
 //set the ranges
 var xb = d3.scaleBand().range([0, widthb]).padding(0.1);

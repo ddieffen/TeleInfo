@@ -7,6 +7,7 @@ import logging
 import sys
 import sqlite3
 import time
+import datetime
 
 from btlewrap import available_backends, BluepyBackend
 from mitemp_bt.mitemp_bt_poller import MiTempBtPoller, \
@@ -24,6 +25,8 @@ def poll():
     t3 = "-1"
     h3 = "-1"
     b3 = "-1"
+
+    timestamp = str(int(time.time()))
 
     """Poll data from the sensor."""
     backend = BluepyBackend
@@ -67,8 +70,6 @@ def poll():
     except:
         print("Exception Bebe")
 
-    timestamp = str(int(time.time()))
-
     query = "INSERT INTO home (timestamp, t1, h1, b1, t2, h2, b2, t3, h3, b3) VALUES ("+timestamp+", "+t1+", "+h1+", "+b1+", "+t2+", "+h2+", "+b2+", "+t3+", "+h3+", "+b3+");"
 
     print(query)
@@ -80,9 +81,12 @@ def poll():
     conn.commit()
     conn.close()
 
-def main():
-    poll()
+def main(argv):
+    if datetime.datetime.now().minute % 5 == 0:
+        poll()
+    else:
+        print("not 5 min")
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])

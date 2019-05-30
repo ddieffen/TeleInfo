@@ -1,2 +1,16 @@
 #!/bin/bash
-stty 1200 cs7 evenp cstopb -igncr -inlcr -brkint -icrnl -opost -isig -icanon -iexten -F /dev/ttyS0
+stty 1200 cs7 evenp cstopb -igncr -inlcr -brkint -icrnl -opost -isig -icanon -iexten -F /dev/serial0
+
+
+#If you need Bluetooth + I2C you need both UART devices, 
+#so enable_uart=1 needs to be set in /DietPi/config.txt. No 
+#serial console can be used, so you need to disable both: 
+#systemctl disable serial-console@ttyS0 systemctl mask 
+#serial-console@ttyS0 systemctl disable serial-console@ttyAMA0 
+#systemctl mask serial-console@ttyAMA0 And 
+#in /boot/cmdline.txt remove all console= entries 
+#besides console=tty1 (and even this can be removed since tty1 is 
+#used as default if non is defined for boot messsages).
+
+#ne pas oublier de mettre cette commande dans dietpi@DietPi:~$ sudo pico /var/lib/dietpi/dietpi-autostart/custom.sh
+#pour une execution au démarrage
