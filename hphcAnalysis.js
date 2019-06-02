@@ -1,5 +1,5 @@
 //set the margins of the canevas
-var marginb = {top: 20, right: 20, bottom: 20, left:40},
+var marginb = {top: 20, right: 20, bottom: 20, left:50},
     widthb = 150 - marginb.left - marginb.right,
     heightb = 180 - marginb.top - marginb.bottom;
 

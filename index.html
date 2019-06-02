@@ -1,7 +1,7 @@
 <html>
   <head>
     <meta http-equiv="refresh" content="120" />
-    <title>Consommation</title>
+    <title>Conso, temp et hygro</title>
     <style>
     .stylePowerHP {
       fill: none;
@@ -57,7 +57,7 @@
     }
     .styleT3 {
       fill: none;
-      stroke: yellow;
+      stroke: GreenYellow;
       stroke-width: 2px;
     }
     .styleH1 {
@@ -72,21 +72,22 @@
     }
     .styleH3 {
       fill: none;
-      stroke: yellow;
+      stroke: GreenYellow;
       stroke-width: 2px;
     }
-
-
-
+    h1 {
+      text-align:center;
+    }
    </style>
   </head>
   <body>
+    <h1>Consommation, ensoleillement, temp&eacute;ratures et hygrom&eacute;trie</h1>
     <script src="d3.v5.min.js"></script>
     <script src="powerChart.js"></script>
+    <script src="homeHumi.js"></script>
     <br>
     <script src="hphcAnalysis.js"></script>
     <br>
-    <script src="homeTemps.js"></script>
     <?php include "getAnnualCost.php" ?>
   </body>
 </html>

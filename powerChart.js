@@ -1,6 +1,6 @@
-    var margin = {top: 20, right: 20, bottom: 30, left: 50},
-    width = 750 - margin.left - margin.right,
-    height = 250 - margin.top - margin.bottom;
+    var margin = {top: 20, right: 30, bottom: 30, left: 50},
+    width = 900 - margin.left - margin.right,
+    height = 350 - margin.top - margin.bottom;
 
     var parseTime = d3.timeParse("%s");
 
