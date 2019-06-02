@@ -6,7 +6,6 @@
 
     var x = d3.scaleTime().range([0, width]);
     var y = d3.scaleLinear().range([height, 0]);
-    var y1 = d3.scaleLinear().range([height, 0]);
 
     var powerLineHP = d3.line()
       .defined(function(d) {
@@ -35,13 +34,6 @@
       .x(function(d) { return x(d.Date); })
       .y0(height)
       .y1(function(d) { return y(d.Power); });
-
-    var tempLine = d3.line()
-      .defined(function(d) {
-        return d.tmp !== -1;
-      })
-      .x(function(d) { return x(d.Date);})
-      .y(function(d) { return y1(d.Temp);});
 
     var sunLine = d3.line()
       .defined(function(d) {
@@ -138,22 +130,13 @@
       //format the data
       data.forEach(function(d) {
         d.Date = parseTime(d.t);
-        d.Temp = d.tmp;
         d.Sun = d.sun;
-        d.Hum = d.hum;
       });
 
       //scale the range of the data
       x.domain(d3.extent(data, function(d) { return d.Date;}));
-      y1.domain([0, d3.max(data, function(d) { return d.Temp})]);
 
-      //add the valueline path
-      svg.append("path")
-        .data([data])
-        .attr("class", "styleTemp")
-        .attr("d", tempLine);
-
-      //add the valueline path for sun power
+      //add value line for sun irradiation
       svg.append("path")
         .data([data])
         .attr("class", "styleSun")
@@ -169,12 +152,6 @@
       svg.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
-
-      //add the Y1 axis
-      svg.append("g")
-        .attr("class", "axisCoral")
-        .attr("transform", "translate( " + width + ", 0)")
-        .call(d3.axisRight(y1));
     }
 
     d3.json("getPower.php")
