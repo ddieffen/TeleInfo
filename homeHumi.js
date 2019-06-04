@@ -1,6 +1,6 @@
     var hmargin = {top: 0, right: 30, bottom: 30, left: 50},
     hwidth = 900 - hmargin.left - hmargin.right,
-    hheight = 175 - hmargin.top - hmargin.bottom;
+    hheight = 205 - hmargin.top - hmargin.bottom;
 
     var hparseTime = d3.timeParse("%s");
 
