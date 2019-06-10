@@ -15,7 +15,7 @@ hext = "-1"
 sunp = "-1"
 checked = 0
 
-query = "SELECT * FROM weather WHERE (text = -1 OR hext = -1 OR sunext = -1) AND (checked IS NULL OR checked <= 10) ORDER BY timestamp DESC LIMIT 20;"
+query = "SELECT * FROM weather WHERE (text = -1 OR hext = -1 OR sunext = -1) AND (checked IS NULL OR checked <= 10) ORDER BY timestamp DESC LIMIT 100;"
 database = "/home/dietpi/teleinfo.sqlite"
 conn = sqlite3.connect(database)
 cursor = conn.cursor()
@@ -58,14 +58,39 @@ for row in results:
     try:
         # get method of requests module return response object
         page = requests.get(base_url)
-        tree = html.fromstring(page.content)
+        print "REQUEST===================================================="
+        print page.encoding
+        #tree = html.fromstring(page.content)
+        #What is the main difference in parsing HTML with .content or .text?
+
+        #When you make a request, Requests makes educated guesses about the
+        #encoding of the response based on the HTTP headers. The text encoding guessed
+        #by Requests is used when you access r.text. You can find out what encoding
+        #Requests is using, and change it, using the r.encoding property
+
+        #If you change the encoding, Requests will use the new value of r.encoding
+        #whenever you call r.text. You might want to do this in any situation where
+        #you can apply special logic to work out what the encoding of the content
+        #will be. For example, HTTP and XML have the ability to specify their
+        #encoding in their body. In situations like this, you should use r.content
+        #to find the encoding, and then set  r.encoding. This will let you use r.text
+        #with the correct encoding.
+        pagetext = page.text
+        print "Pagetext OK"
+
+        tree = html.fromstring(pagetext)
+        print "Tree OK"
 
         checked = checked + 1
 
         area = tree.xpath('//area[@alt[contains(.,"Pluguffan")]]')
+        print "Area selection OK"
+
+        print len(area)
+
         altArea = area[0].attrib['alt']
 
-        print "Area", altArea
+        print "Area OK"
         spt = altArea.replace('hr','br').split('<br />')
 
         text = re.findall("[\.0-9]*", spt[2].split('</b> ')[1])[0]
@@ -80,13 +105,22 @@ for row in results:
 
         if len(spt) >= 15:
            sunsplit = spt[14].split('</b> ')
-           if len(sunsplit) > 1:
+           if len(sunsplit) > 1 and "W/m" in sunsplit[1]:
                sunp = re.findall("[\.0-9]*", sunsplit[1])[0]
                print "Idx14 Sun ", sunp
            else:
-               print "No sun power"
-    except:
+               print "No sun power line 14"
+        if len(spt) >= 13 and sunp == -1:
+           sunsplit = spt[12].split('</b> ')
+           if len(sunsplit) > 1 and "W/m" in sunsplit[1]:
+               sunp = re.findall("[\.0-9]*", sunsplit[1])[0]
+               print "Idx14 Sun ", sunp
+           else:
+               print "No sun power line 12"
+
+    except Exception, e:
         print "No Connection Exception"
+        print str(e)
 
     conn2 = sqlite3.connect(database)
     query = "UPDATE weather SET text = "+str(text)+", hext = "+str(hext)+", sunext = "+str(sunp)+", checked = "+str(checked)+" WHERE timestamp = "+str(row[0])+";"

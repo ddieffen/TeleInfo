@@ -37,7 +37,7 @@ class MiTempBtPoller(object):
         self._last_read = None
         self._fw_last_read = None
         self.retries = retries
-        self.ble_timeout = 60
+        self.ble_timeout = 100
         self.lock = Lock()
         self._firmware_version = None
         self.battery = None
