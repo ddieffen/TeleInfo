@@ -1,4 +1,4 @@
-    var hmargin = {top: 0, right: 30, bottom: 30, left: 50},
+    var hmargin = {top: 0, right: 50, bottom: 30, left: 50},
     hwidth = 900 - hmargin.left - hmargin.right,
     hheight = 205 - hmargin.top - hmargin.bottom;
 
@@ -26,7 +26,7 @@
       .x(function(d) { return hx(d.Date);})
       .y(function(d) { return hy(d.h3);});
 
-    var tmargin = {top: 0, right: 30, bottom: 0, left: 50},
+    var tmargin = {top: 0, right: 50, bottom: 0, left: 50},
     twidth = 900 - tmargin.left - tmargin.right,
     theight = 175 - tmargin.top - tmargin.bottom;
 

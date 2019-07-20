@@ -28,6 +28,6 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
     return "[ ".implode(', ', $data)."]";
   }
 
-echo getTempHum(3);
+echo getTempHum(7);
 
 ?>

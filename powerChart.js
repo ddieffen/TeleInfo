@@ -1,4 +1,4 @@
-    var margin = {top: 20, right: 30, bottom: 30, left: 50},
+    var margin = {top: 20, right: 50, bottom: 30, left: 50},
     width = 900 - margin.left - margin.right,
     height = 350 - margin.top - margin.bottom;
 
@@ -105,9 +105,15 @@
       svg.append("g")
         .attr("class", "axisSteelBlue")
         .call(d3.axisLeft(y));
+
+      //add the Y1 axis
+      svg.append("g")
+        .attr("class", "axisSteelBlue")
+        .attr("transform", "translate( " + width + ", 0)")
+        .call(d3.axisRight(y));
     }
 
-    function drawTemperature(data) {
+    function drawSunPower(data) {
       //add min and max timestamp data
       var firstObj = {};
       firstObj["t"] = minTimestamp;
@@ -160,6 +166,6 @@
 
         d3.json("getTemperature.php")
           .then( function(data) {
-            drawTemperature(data);
+            drawSunPower(data);
         });
       });

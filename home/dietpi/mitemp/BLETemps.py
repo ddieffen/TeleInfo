@@ -25,6 +25,12 @@ def poll():
     t3 = "-1"
     h3 = "-1"
     b3 = "-1"
+    t4 = "-1"
+    h4 = "-1"
+    b4 = "-1"
+    t5 = "-1"
+    h5 = "-1"
+    b5 = "-1"
 
     timestamp = str(int(time.time()))
 
@@ -70,7 +76,33 @@ def poll():
     except:
         print("Exception Bebe")
 
-    query = "INSERT INTO home (timestamp, t1, h1, b1, t2, h2, b2, t3, h3, b3) VALUES ("+timestamp+", "+t1+", "+h1+", "+b1+", "+t2+", "+h2+", "+b2+", "+t3+", "+h3+", "+b3+");"
+    mac = "58:2D:34:30:B7:1E" #entree
+    try:
+        print("Tentative Entree")
+        poller = MiTempBtPoller(mac, backend)
+        b4 = format(poller.parameter_value(MI_BATTERY))
+        print("Battery: " + b4)
+        t4 = format(poller.parameter_value(MI_TEMPERATURE))
+        print("Temperature: " + t4)
+        h4 = format(poller.parameter_value(MI_HUMIDITY))
+        print("Humidity: " + h4)
+    except:
+        print("Exception Entree")
+
+    mac = "58:2D:34:30:B6:9E" #garage
+    try:
+        print("Tentative Garage")
+        poller = MiTempBtPoller(mac, backend)
+        b5 = format(poller.parameter_value(MI_BATTERY))
+        print("Battery: " + b5)
+        t5 = format(poller.parameter_value(MI_TEMPERATURE))
+        print("Temperature: " + t5)
+        h5 = format(poller.parameter_value(MI_HUMIDITY))
+        print("Humidity: " + h5)
+    except:
+        print("Exception Garage")
+
+    query = "INSERT INTO home (timestamp, t1, h1, b1, t2, h2, b2, t3, h3, b3, t4, h4, b4, t5, h5, b5) VALUES ("+timestamp+", "+t1+", "+h1+", "+b1+", "+t2+", "+h2+", "+b2+", "+t3+", "+h3+", "+b3+", "+t4+", "+h4+", "+b4+", "+t5+", "+h5+", "+b5+");"
 
     print(query)
 
