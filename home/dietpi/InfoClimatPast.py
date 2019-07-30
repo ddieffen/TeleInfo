@@ -13,9 +13,10 @@ text = "-1"
 pext = "-1"
 hext = "-1"
 sunp = "-1"
+plui = "-1"
 checked = 0
 
-query = "SELECT * FROM weather WHERE (text = -1 OR hext = -1 OR sunext = -1) AND (checked IS NULL OR checked <= 10) ORDER BY timestamp DESC LIMIT 100;"
+query = "SELECT * FROM weather WHERE (text = -1 OR hext = -1 OR sunext = -1 OR plui = -1) AND (checked IS NULL OR checked <= 11) ORDER BY timestamp DESC;"
 database = "/home/dietpi/teleinfo.sqlite"
 conn = sqlite3.connect(database)
 cursor = conn.cursor()
@@ -54,7 +55,12 @@ for row in results:
         checked = 0
     else:
         checked = int(row[4])
-    print "Original data    text="+str(text)+" hext="+str(hext)+" sunext="+str(sunp)+" checked="+str(checked)
+    if row[5] is None:
+        plui = -1;
+    else:
+        plui = row[5]
+
+    print "Original data    text="+str(text)+" hext="+str(hext)+" sunext="+str(sunp)+" checked="+str(checked)+" pluie="+str(plui)
     try:
         # get method of requests module return response object
         page = requests.get(base_url)
@@ -95,35 +101,35 @@ for row in results:
 
         text = re.findall("[\.0-9]*", spt[2].split('</b> ')[1])[0]
         pext = re.findall("[\.0-9]*", spt[6].split('</b> ')[1])[0]
-        hext = re.findall("[\.0-9]*", spt[7].split('</b> ')[1])[0]
-        if hext == "":
-            hext = "-1"
 
         print "Idx 2 Temp", text
         print "Idx 6 Pres", pext
         print "Idx 7 Hygr", hext
 
-        if len(spt) >= 15:
-           sunsplit = spt[14].split('</b> ')
+        for i in range(0, len(spt)):
+           sunsplit = spt[i].split('</b> ')
            if len(sunsplit) > 1 and "W/m" in sunsplit[1]:
                sunp = re.findall("[\.0-9]*", sunsplit[1])[0]
-               print "Idx14 Sun ", sunp
+               print "Sun ", sunp
            else:
-               print "No sun power line 14"
-        if len(spt) >= 13 and sunp == -1:
-           sunsplit = spt[12].split('</b> ')
-           if len(sunsplit) > 1 and "W/m" in sunsplit[1]:
-               sunp = re.findall("[\.0-9]*", sunsplit[1])[0]
-               print "Idx14 Sun ", sunp
+               print "No sun power line", i
+           if len(sunsplit) > 1 and "%" in sunsplit[1]:
+               hext = re.findall("[\.0-9]*", sunsplit[1])[0]
+               print "Hext ", hext
            else:
-               print "No sun power line 12"
+               print "No Humidity line", i
+           if len(sunsplit) > 1 and "mm" in sunsplit[1]:
+               plui = re.findall("[\.0-9]*", sunsplit[1])[0]
+               print "Pluie ", plui
+           else:
+               print "No rain line", i
 
     except Exception, e:
         print "No Connection Exception"
         print str(e)
 
     conn2 = sqlite3.connect(database)
-    query = "UPDATE weather SET text = "+str(text)+", hext = "+str(hext)+", sunext = "+str(sunp)+", checked = "+str(checked)+" WHERE timestamp = "+str(row[0])+";"
+    query = "UPDATE weather SET text = "+str(text)+", hext = "+str(hext)+", sunext = "+str(sunp)+", checked = "+str(checked)+", plui = "+str(plui)+" WHERE timestamp = "+str(row[0])+";"
     print query
     cursor2 = conn2.cursor()
     try:
