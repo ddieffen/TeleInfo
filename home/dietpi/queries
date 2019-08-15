@@ -1,0 +1,11 @@
+//recréer une table avec des moyennes par heure pour reéchantilloner la table et effacer les lignes prises a intervalles plus rapporchées
+create table weather_new as select timestamp, avg(text) as text, avg(hext) as hext, avg(sunext) as sunext, avg(checked) as checked from weather group by strftime('%Y-%m-%d %H', datetime(timestamp, 'unixepoch', 'localtime'));
+
+//moyenne hebdomadaires tempé, min tempé, max température, moyenne hygro et energy solaire
+select strftime('%W', datetime(timestamp, 'unixepoch', 'localtime')) as week, avg(case when text > -1 then text else null end) as avgtemp, max(text) as maxtemp, min(case when text > -1 then text else null end) as mintemp, sum(case when sunext > -1 then sunext else null end)/1000 as sunNRGkW from weather group by week;
+
+//moyennes hebdomadaires t1, t2, t3 pour la maison
+select strftime('%W', datetime(timestamp, 'unixepoch', 'localtime')) as week, avg(case when t1 > -1 then t1 else null end) as avgt1, avg(case when t2 > -1 then t2 else null end) as avgt2, avg(case when t3 > -1 then t3 else null end) as avgt3 from home group by week;
+
+//somme mensuelle consomation
+select strftime('%m', datetime(timestamp, 'unixepoch', 'localtime')) as month, sum(daily_hc), sum(daily_hp) from conso group by month;
