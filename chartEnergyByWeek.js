@@ -1,37 +1,35 @@
 //http://bl.ocks.org/mstanaland/6100713
-var wmargin = {top: 10, right: 0, bottom: 10, left: 20},
-    wwidth = 710 - wmargin.left - wmargin.right,
-    wheight = 180 - wmargin.top - wmargin.bottom;
+var wNRGmargin = {top: 20, right: 50, bottom: 30, left: 50},
+    wNRGwidth = 900 - wNRGmargin.left - wNRGmargin.right,
+    wNRGheight = 350 - wNRGmargin.top - wNRGmargin.bottom;
 
-var wsvg = d3.select("body").append("svg")
-    .attr("width", wwidth + wmargin.left + wmargin.right)
-    .attr("height", wheight + wmargin.top + wmargin.bottom)
+var wNRGsvg = d3.select("body").append("svg")
+    .attr("width", wNRGwidth + wNRGmargin.left + wNRGmargin.right)
+    .attr("height", wNRGheight + wNRGmargin.top + wNRGmargin.bottom)
   .append("g")
-    .attr("transform", "translate(" + wmargin.left + "," + wmargin.top + ")");
+    .attr("transform", "translate(" + wNRGmargin.left + "," + wNRGmargin.top + ")");
 
-function drawHPHCShares(data) {
+function drawWeeklyAverages(data) {
 
   var series = d3.stack()
-    .keys(["shareHP", "shareHC"])
+    .keys(["wHP", "wHC"])
     (data);
 
   var x = d3.scaleBand()
     .domain(data.map(function(d) { return d.w; }))
-    .rangeRound([wmargin.left, wwidth - wmargin.right])
+    .rangeRound([wNRGmargin.left, wNRGwidth - wNRGmargin.right])
     .padding(0.1);
 
   var y = d3.scaleLinear()
     .domain([d3.min(series, stackMin), d3.max(series, stackMax)])
-    .rangeRound([wheight - wmargin.bottom, wmargin.top]);
+    .rangeRound([wNRGheight - wNRGmargin.bottom, wNRGmargin.top]);
 
-  var z = d3.scaleOrdinal(d3.schemeCategory10);
-
-  wsvg.append("g")
+  wNRGsvg.append("g")
     .selectAll("g")
     .data(series)
     .enter().append("g")
       .attr("class",  function(d) {
-        if (d.key == "shareHP"){ return "styleHPArea"; }
+        if (d.key == "wHP"){ return "styleHPArea"; }
         else {return "styleHCArea"; }
       })
     .selectAll("rect")
@@ -42,13 +40,62 @@ function drawHPHCShares(data) {
     .attr("y", function(d) { return y(d[1]); })
     .attr("height", function(d) { return y(d[0]) - y(d[1]); })
 
-  wsvg.append("g")
+  wNRGsvg.append("g")
     .attr("transform", "translate(0," + y(0) + ")")
     .call(d3.axisBottom(x));
 
-  wsvg.append("g")
+  wNRGsvg.append("g")
     .attr("transform", "translate(" + wmargin.left + ",0)")
     .call(d3.axisLeft(y));
+
+  var ty = d3.scaleLinear().range([wNRGheight-wNRGmargin.bottom, wNRGmargin.top]);
+  var tMin = d3.min(data, function(d) { return d.wThome; });
+  tMin = d3.min([tMin, d3.min(data, function (d) {return d.wText; })])
+  var tMax = d3.max(data, function(d) { return d.wThome; });
+  tMax = d3.max([tMax, d3.max(data, function (d) {return d.wText; })])
+  ty.domain([tMin, tMax])
+
+  var wtHomeLine = d3.line()
+      .defined(function(d) {
+        return d.wThome !== -1;
+      })
+      .x(function(d) { return x(d.w);})
+      .y(function(d) { return ty(d.wThome);});
+
+ var wtExtLine = d3.line()
+      .defined(function(d) {
+        return d.wThome !== -1;
+      })
+      .x(function(d) { return x(d.w);})
+      .y(function(d) { return ty(d.wText);});
+
+  var bw = x.bandwidth();
+
+  wNRGsvg.append("path")
+        .data([data])
+        .attr("transform", "translate(" + bw/2 + ",0)")
+        .attr("class", "styleT1")
+        .attr("d", wtHomeLine);
+
+  wNRGsvg.append("path")
+        .data([data])
+        .attr("transform", "translate(" + bw/2 + ",0)")
+        .attr("class", "styleTemp")
+        .attr("d", wtExtLine);
+
+  var sy = d3.scaleLinear().range([wNRGheight-wNRGmargin.bottom, wNRGmargin.top]);
+  var sMax = d3.max(data, function(d) { return d.wSunkWh; });
+  sy.domain([0, sMax])
+
+  //Add Sun bar chart
+  wNRGsvg.selectAll("bar")
+    .data(data)
+  .enter().append("rect")
+    .attr("class", "styleSunArea")
+    .attr("x", function(d) { return x(d.w)+bw/3; })
+    .attr("width", bw/3)
+    .attr("y", function(d) { return sy(d.wSunkWh); })
+    .attr("height", function(d) { return wNRGheight - sy(d.wSunkWh) - wNRGmargin.bottom; });
 }
 
 function stackMin(serie) {
@@ -59,8 +106,8 @@ function stackMax(serie) {
   return d3.max(serie, function(d) { return d[1]; });
 }
 
-d3.json("getHPHCSharesByWeek.php")
+d3.json("getWeeklyData.php")
     .then( function(data) {
-       drawHPHCShares(data);
+       drawWeeklyAverages(data);
     });
 
