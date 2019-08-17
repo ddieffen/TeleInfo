@@ -5,7 +5,7 @@
     var parseTime = d3.timeParse("%s");
 
     var x = d3.scaleTime().range([0, width]);
-    var y = d3.scaleLog().range([height, 0]);
+    var y = d3.scaleLog().base(2).range([height, 0]);
 
     var powerLineHP = d3.line()
       .defined(function(d) {

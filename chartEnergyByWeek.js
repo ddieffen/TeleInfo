@@ -83,6 +83,10 @@ function drawWeeklyAverages(data) {
         .attr("class", "styleTemp")
         .attr("d", wtExtLine);
 
+  wNRGsvg.append("g")
+    .attr("transform", "translate(" + wNRGwidth + ",0)")
+    .call(d3.axisRight(ty));
+
   var sy = d3.scaleLinear().range([wNRGheight-wNRGmargin.bottom, wNRGmargin.top]);
   var sMax = d3.max(data, function(d) { return d.wSunkWh; });
   sy.domain([0, sMax])
@@ -96,6 +100,22 @@ function drawWeeklyAverages(data) {
     .attr("width", bw/3)
     .attr("y", function(d) { return sy(d.wSunkWh); })
     .attr("height", function(d) { return wNRGheight - sy(d.wSunkWh) - wNRGmargin.bottom; });
+
+  var py = d3.scaleLinear().range([wNRGheight-wNRGmargin.bottom, wNRGmargin.top]);
+  var pMax = d3.max(data, function(d) { return d.wPlui; });
+  py.domain([0, pMax])
+
+  //Add Sun bar chart
+  wNRGsvg.selectAll("bar")
+    .data(data)
+  .enter().append("rect")
+    .attr("class", "stylePluiArea")
+    .attr("x", function(d) { return x(d.w)+(2*bw/3); })
+    .attr("width", bw/3)
+    .attr("y", function(d) { return py(d.wPlui); })
+    .attr("height", function(d) { return wNRGheight - py(d.wPlui) - wNRGmargin.bottom; });
+
+
 }
 
 function stackMin(serie) {
