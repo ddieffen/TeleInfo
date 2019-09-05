@@ -10,7 +10,7 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
     $now  = time();
     $past = strtotime("-$nb_days day", $now);
     $db = new SQLite3($sqlite);
-    $results = $db->query("SELECT * FROM home WHERE timestamp > $past ORDER BY timestamp ASC;");
+    $results = $db->query("SELECT timestamp,t1,t2,t3,h1,h2,h3 FROM home WHERE timestamp > $past;");
 
     $data = array();
 

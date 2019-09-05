@@ -16,7 +16,7 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
     while($row = $results->fetchArray(SQLITE3_ASSOC)){
       $data[] = "{ \"w\": \"".$row['t1.week']."\", \"wText\": "
                 .$row['t1.avgtext'].", \"wSunkWh\": "
-                .$row['t1.sunnrgkwh'].", \"wThome\": "
+                .(!is_null($row['t1.sunnrgkwh']) ? $row['t1.sunnrgkwh'] : "0").", \"wThome\": "
                 .$row['t2.avgthome'].", \"wHC\": "
                 .$row['t3.weeklyHC'].", \"wHP\": "
                 .$row['t3.weeklyHP'].", \"wPlui\": "

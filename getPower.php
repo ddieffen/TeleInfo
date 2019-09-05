@@ -10,7 +10,7 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
     $now  = time();
     $past = strtotime("-$nb_days day", $now);
     $db = new SQLite3($sqlite);
-    $results = $db->query("SELECT * FROM puissance WHERE timestamp > $past ORDER BY timestamp ASC;");
+    $results = $db->query("SELECT timestamp,hchp,watt FROM puissance WHERE timestamp > $past;");
 
     $data = array();
 

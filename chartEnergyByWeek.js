@@ -1,6 +1,7 @@
 //http://bl.ocks.org/mstanaland/6100713
-var wNRGmargin = {top: 20, right: 50, bottom: 30, left: 50},
+var wNRGmargin = {top: 20, right: 25, bottom: 30, left: 25},
     wNRGwidth = 900 - wNRGmargin.left - wNRGmargin.right,
+    wNRGrightAxis = wNRGwidth - wNRGmargin.left;
     wNRGheight = 350 - wNRGmargin.top - wNRGmargin.bottom;
 
 var wNRGsvg = d3.select("body").append("svg")
@@ -45,7 +46,7 @@ function drawWeeklyAverages(data) {
     .call(d3.axisBottom(x));
 
   wNRGsvg.append("g")
-    .attr("transform", "translate(" + wmargin.left + ",0)")
+    .attr("transform", "translate(" + wNRGmargin.left + ",0)")
     .call(d3.axisLeft(y));
 
   var ty = d3.scaleLinear().range([wNRGheight-wNRGmargin.bottom, wNRGmargin.top]);
@@ -84,8 +85,8 @@ function drawWeeklyAverages(data) {
         .attr("d", wtExtLine);
 
   wNRGsvg.append("g")
-    .attr("transform", "translate(" + wNRGwidth + ",0)")
-    .call(d3.axisRight(ty));
+    .attr("transform", "translate(" + wNRGrightAxis + ",0)")
+    .call(d3.axisRight(y));
 
   var sy = d3.scaleLinear().range([wNRGheight-wNRGmargin.bottom, wNRGmargin.top]);
   var sMax = d3.max(data, function(d) { return d.wSunkWh; });
