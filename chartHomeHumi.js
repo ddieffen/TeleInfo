@@ -25,6 +25,18 @@
       })
       .x(function(d) { return hx(d.Date);})
       .y(function(d) { return hy(d.h3);});
+    var h4Line = d3.line()
+      .defined(function(d) {
+        return d.h4 !== -1;
+      })
+      .x(function(d) { return hx(d.Date);})
+      .y(function(d) { return hy(d.h4);});
+    var h5Line = d3.line()
+      .defined(function(d) {
+        return d.h5 !== -1;
+      })
+      .x(function(d) { return hx(d.Date);})
+      .y(function(d) { return hy(d.h5);});
 
     var tmargin = {top: 0, right: 50, bottom: 0, left: 50},
     twidth = 900 - tmargin.left - tmargin.right,
@@ -53,6 +65,18 @@
       })
       .x(function(d) { return tx(d.Date);})
       .y(function(d) { return ty(d.t3);});
+    var t4Line = d3.line()
+      .defined(function(d) {
+        return d.t4 !== -1;
+      })
+      .x(function(d) { return tx(d.Date);})
+      .y(function(d) { return ty(d.t4);});
+    var t5Line = d3.line()
+      .defined(function(d) {
+        return d.t5 !== -1;
+      })
+      .x(function(d) { return tx(d.Date);})
+      .y(function(d) { return ty(d.t5);});
     var tempLine2 = d3.line()
       .defined(function(d) {
         return d.tmp !== -1;
@@ -108,6 +132,16 @@
         .data([hdata])
         .attr("class", "styleH3")
         .attr("d", h3Line);
+      //add the valueline path
+      hsvg.append("path")
+        .data([hdata])
+        .attr("class", "styleH4")
+        .attr("d", h4Line);
+      //add the valueline path
+      hsvg.append("path")
+        .data([hdata])
+        .attr("class", "styleH5")
+        .attr("d", h5Line);
 
       //add the X axis
       hsvg.append("g")
@@ -144,6 +178,8 @@
       var ttmax = d3.max(tdata, function(d) { return d.t1});
       ttmax = d3.max([ttmax,  d3.max(tdata, function(d) { return d.t2})])
       ttmax = d3.max([ttmax,  d3.max(tdata, function(d) { return d.t3})])
+      ttmax = d3.max([ttmax,  d3.max(tdata, function(d) { return d.t4})])
+      ttmax = d3.max([ttmax,  d3.max(tdata, function(d) { return d.t5})])
 
       ty.domain([ttmin, ttmax]);
 
@@ -162,6 +198,16 @@
         .data([tdata])
         .attr("class", "styleT3")
         .attr("d", t3Line);
+      //add the valueline path
+      tsvg.append("path")
+        .data([tdata])
+        .attr("class", "styleT4")
+        .attr("d", t4Line);
+      //add the valueline path
+      tsvg.append("path")
+        .data([tdata])
+        .attr("class", "styleT5")
+        .attr("d", t5Line);
 
       //add the X axis
       tsvg.append("g")
