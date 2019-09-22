@@ -18,7 +18,8 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
       $data[] = "{ \"t\": ".$row['timestamp'].
                 ", \"tmp\": ".$row['text'].
                 ", \"sun\": ".$row['sunext'].
-                ", \"hum\": ".$row['hext']."}";
+                ", \"hum\": ".$row['hext'].
+                ", \"plui\": ".$row['plui']."}";
     }
 
     return "[ ".implode(', ', $data)."]";

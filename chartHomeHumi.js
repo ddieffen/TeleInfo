@@ -6,6 +6,7 @@
 
     var hx = d3.scaleTime().range([0, hwidth]);
     var hy = d3.scaleLinear().range([hheight, 0]);
+    var py = d3.scaleLinear().range([hheight, 0]);
 
     var h1Line = d3.line()
       .defined(function(d) {
@@ -37,6 +38,12 @@
       })
       .x(function(d) { return hx(d.Date);})
       .y(function(d) { return hy(d.h5);});
+    var pluiLine = d3.line()
+      .defined(function(d) {
+        return d.plui !== -1;
+      })
+      .x(function(d) { return hx(d.Date);})
+      .y(function(d) { return py(d.plui);});
 
     var tmargin = {top: 0, right: 50, bottom: 0, left: 50},
     twidth = 900 - tmargin.left - tmargin.right,
@@ -82,14 +89,14 @@
         return d.tmp !== -1;
       })
       .x(function(d) { return tx(d.Date);})
-      .y(function(d) { return ty(d.Temp);});
+      .y(function(d) { return ty(d.tmp);});
 
      var humLine2 = d3.line()
       .defined(function(d) {
-        return d.tmp !== -1;
+        return d.hum !== -1;
       })
       .x(function(d) { return hx(d.Date);})
-      .y(function(d) { return hy(d.Hum);});
+      .y(function(d) { return hy(d.hum);});
 
     var tsvg = d3.select("body").append("svg")
       .attr("width", twidth + tmargin.left + tmargin.right)
@@ -114,7 +121,6 @@
 
       //scale the range of the data
       hx.domain(d3.extent(hdata, function(d) { return d.Date;}));
-
       hy.domain([hhmin, hhmax+5]);
 
       //add the valueline path
@@ -233,12 +239,14 @@
       firstObj["tmp"] = -1;
       firstObj["sun"] = -1;
       firstObj["hum"] = -1;
+      firstObj["plui"] = -1;
       data.push(firstObj);
       var lastObj = {};
       lastObj["t"] = tmaxTimestamp;
       lastObj["tmp"] = -1;
       lastObj["sun"] = -1;
       lastObj["hum"] = -1;
+      lastObj["plui"] = -1;
       data.push(lastObj);
 
       //sorting the data
@@ -249,10 +257,9 @@
       //format the data
       data.forEach(function(d) {
         d.Date = tparseTime(d.t);
-        d.Temp = d.tmp;
-        d.Hum = d.hum;
       });
       ty.domain([ttmin, ttmax]);
+      py.domain([0, d3.max(data, function(d) { return d.plui})]);
 
       //add the valueline path
       tsvg.append("path")
@@ -265,6 +272,12 @@
         .data([data])
         .attr("class", "styleTemp")
         .attr("d", humLine2);
+
+      //add the valueline path
+      hsvg.append("path")
+        .data([data])
+        .attr("class", "stylePluiArea")
+        .attr("d", pluiLine);
     }
 
     d3.json("getHome.php")
