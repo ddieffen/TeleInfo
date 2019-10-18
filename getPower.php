@@ -27,6 +27,6 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
     return "[ ".implode(', ', $data)."]";
   }
 
-echo getInstantConsumption(7);
+echo getInstantConsumption(3);
 
 ?>

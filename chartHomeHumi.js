@@ -8,42 +8,19 @@
     var hy = d3.scaleLinear().range([hheight, 0]);
     var py = d3.scaleLinear().range([hheight, 0]);
 
-    var h1Line = d3.line()
-      .defined(function(d) {
-        return d.h1 !== -1;
-      })
-      .x(function(d) { return hx(d.Date);})
-      .y(function(d) { return hy(d.h1);});
-    var h2Line = d3.line()
-      .defined(function(d) {
-        return d.h2 !== -1;
-      })
-      .x(function(d) { return hx(d.Date);})
-      .y(function(d) { return hy(d.h2);});
-    var h3Line = d3.line()
-      .defined(function(d) {
-        return d.h3 !== -1;
-      })
-      .x(function(d) { return hx(d.Date);})
-      .y(function(d) { return hy(d.h3);});
-    var h4Line = d3.line()
-      .defined(function(d) {
-        return d.h4 !== -1;
-      })
-      .x(function(d) { return hx(d.Date);})
-      .y(function(d) { return hy(d.h4);});
-    var h5Line = d3.line()
-      .defined(function(d) {
-        return d.h5 !== -1;
-      })
-      .x(function(d) { return hx(d.Date);})
-      .y(function(d) { return hy(d.h5);});
     var pluiLine = d3.line()
       .defined(function(d) {
         return d.plui !== -1;
       })
       .x(function(d) { return hx(d.Date);})
       .y(function(d) { return py(d.plui);});
+    var pluiArea = d3.area()
+      .defined(function(d){
+        return d.plui !== -1;
+      })
+      .x(function(d) { return hx(d.Date);})
+      .y0(hheight)
+      .y1(function(d) { return py(d.plui);});
 
     var tmargin = {top: 0, right: 50, bottom: 0, left: 50},
     twidth = 900 - tmargin.left - tmargin.right,
@@ -54,36 +31,6 @@
     var tx = d3.scaleTime().range([0, twidth]);
     var ty = d3.scaleLinear().range([theight, 0]);
 
-    var t1Line = d3.line()
-      .defined(function(d) {
-        return d.t1 !== -1;
-      })
-      .x(function(d) { return tx(d.Date);})
-      .y(function(d) { return ty(d.t1);});
-    var t2Line = d3.line()
-      .defined(function(d) {
-        return d.t2 !== -1;
-      })
-      .x(function(d) { return tx(d.Date);})
-      .y(function(d) { return ty(d.t2);});
-    var t3Line = d3.line()
-      .defined(function(d) {
-        return d.t3 !== -1;
-      })
-      .x(function(d) { return tx(d.Date);})
-      .y(function(d) { return ty(d.t3);});
-    var t4Line = d3.line()
-      .defined(function(d) {
-        return d.t4 !== -1;
-      })
-      .x(function(d) { return tx(d.Date);})
-      .y(function(d) { return ty(d.t4);});
-    var t5Line = d3.line()
-      .defined(function(d) {
-        return d.t5 !== -1;
-      })
-      .x(function(d) { return tx(d.Date);})
-      .y(function(d) { return ty(d.t5);});
     var tempLine2 = d3.line()
       .defined(function(d) {
         return d.tmp !== -1;
@@ -113,6 +60,7 @@
             "translate(" + hmargin.left + "," + hmargin.top + ")");
     var hhmin = 1000
     var hhmax = 0
+
     function drawHum(hdata) {
       //format the data
       hdata.forEach(function(d) {
@@ -124,30 +72,45 @@
       hy.domain([hhmin, hhmax+5]);
 
       //add the valueline path
-      hsvg.append("path")
-        .data([hdata])
+      hsvg.selectAll("dot")
+        .data(hdata)
+        .enter().append("circle")
         .attr("class", "styleH1")
-        .attr("d", h1Line);
+        .attr("r", 0.3)
+        .attr("cx", function(d){ return tx(d.Date); })
+        .attr("cy", function(d){ return hy(d.h1); });
       //add the valueline path
-      hsvg.append("path")
-        .data([hdata])
+      hsvg.selectAll("dot")
+        .data(hdata)
+        .enter().append("circle")
         .attr("class", "styleH2")
-        .attr("d", h2Line);
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return hy(d.h2); });
       //add the valueline path
-      hsvg.append("path")
-        .data([hdata])
+      hsvg.selectAll("dot")
+        .data(hdata)
+        .enter().append("circle")
         .attr("class", "styleH3")
-        .attr("d", h3Line);
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return hy(d.h3); });
       //add the valueline path
-      hsvg.append("path")
-        .data([hdata])
+      hsvg.selectAll("dot")
+        .data(hdata)
+        .enter().append("circle")
         .attr("class", "styleH4")
-        .attr("d", h4Line);
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return hy(d.h4); });
       //add the valueline path
-      hsvg.append("path")
-        .data([hdata])
+      hsvg.selectAll("dot")
+        .data(hdata)
+        .enter().append("circle")
         .attr("class", "styleH5")
-        .attr("d", h5Line);
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return hy(d.h5); });
 
       //add the X axis
       hsvg.append("g")
@@ -190,30 +153,45 @@
       ty.domain([ttmin, ttmax]);
 
       //add the valueline path
-      tsvg.append("path")
-        .data([tdata])
+      tsvg.selectAll("dot")
+        .data(tdata)
+        .enter().append("circle")
         .attr("class", "styleT1")
-        .attr("d", t1Line);
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return ty(d.t1); });
       //add the valueline path
-      tsvg.append("path")
-        .data([tdata])
+      tsvg.selectAll("dot")
+        .data(tdata)
+        .enter().append("circle")
         .attr("class", "styleT2")
-        .attr("d", t2Line);
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return ty(d.t2); });
       //add the valueline path
-      tsvg.append("path")
-        .data([tdata])
+      tsvg.selectAll("dot")
+        .data(tdata)
+        .enter().append("circle")
         .attr("class", "styleT3")
-        .attr("d", t3Line);
-      //add the valueline path
-      tsvg.append("path")
-        .data([tdata])
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return ty(d.t3); });
+       //add the valueline path
+      tsvg.selectAll("dot")
+        .data(tdata)
+        .enter().append("circle")
         .attr("class", "styleT4")
-        .attr("d", t4Line);
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return ty(d.t4); });
       //add the valueline path
-      tsvg.append("path")
-        .data([tdata])
+      tsvg.selectAll("dot")
+        .data(tdata)
+        .enter().append("circle")
         .attr("class", "styleT5")
-        .attr("d", t5Line);
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return ty(d.t5); });
 
       //add the X axis
       tsvg.append("g")
@@ -276,8 +254,14 @@
       //add the valueline path
       hsvg.append("path")
         .data([data])
-        .attr("class", "stylePluiArea")
+        .attr("class", "stylePlui")
         .attr("d", pluiLine);
+
+      //add the area under the plui path
+      hsvg.append("path")
+        .data([data])
+        .attr("class", "stylePluiArea")
+        .attr("d", pluiArea);
     }
 
     d3.json("getHome.php")
