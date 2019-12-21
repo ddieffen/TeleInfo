@@ -13,7 +13,7 @@ text = "-1"
 pext = "-1"
 hext = "-1"
 sunp = "-1"
-plui = "-1"
+plui = "0"
 
 # base_url variable to store url
 base_url = "https://www.infoclimat.fr/cartes/observations-meteo/temps-reel/radiations-solaires/france.html"
