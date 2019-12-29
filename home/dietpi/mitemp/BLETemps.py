@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Demo file showing how to use the mitemp library."""
 
+import subprocess
 import argparse
 import re
 import logging
@@ -31,8 +32,17 @@ def poll():
     t5 = "-1"
     h5 = "-1"
     b5 = "-1"
+    aqi = "-1"
 
     timestamp = str(int(time.time()))
+
+    try:
+        print("Tentative PM2.5 Allumage capteur")
+        myCmd = subprocess.Popen(['miio', 'control', '192.168.1.36', 'power', 'on'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        stdout,stderr = myCmd.communicate()
+    except:
+        print("Exception PM2.5 a l'allumage")
+
 
     """Poll data from the sensor."""
     backend = BluepyBackend
@@ -89,9 +99,9 @@ def poll():
     except:
         print("Exception Entree")
 
-    mac = "58:2D:34:30:B6:9E" #garage
+    mac = "58:2D:34:30:B6:9E" #salle de bains
     try:
-        print("Tentative Garage")
+        print("Tentative salle de bains")
         poller = MiTempBtPoller(mac, backend)
         b5 = format(poller.parameter_value(MI_BATTERY))
         print("Battery: " + b5)
@@ -100,9 +110,29 @@ def poll():
         h5 = format(poller.parameter_value(MI_HUMIDITY))
         print("Humidity: " + h5)
     except:
-        print("Exception Garage")
+        print("Exception salle de bains")
 
-    query = "INSERT INTO home (timestamp, t1, h1, b1, t2, h2, b2, t3, h3, b3, t4, h4, b4, t5, h5, b5) VALUES ("+timestamp+", "+t1+", "+h1+", "+b1+", "+t2+", "+h2+", "+b2+", "+t3+", "+h3+", "+b3+", "+t4+", "+h4+", "+b4+", "+t5+", "+h5+", "+b5+");"
+    try:
+        print("Tentative PM2.5 par Wifi")
+        myCmd = subprocess.Popen(['miio', 'control', '192.168.1.36', 'pm2.5'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        stdout,stderr = myCmd.communicate()
+        spt = stdout.split(b'\n');
+        for i in range(0, len(spt)):
+            if spt[i].isdigit():
+                regexp = re.findall("[0-9]*", str(spt[i]))
+                aqi = regexp[2]
+                print("AQI: " + aqi)
+    except:
+        print("Exception PM2.5")
+
+    try:
+        print("Tentative PM2.5 extinction capteur")
+        myCmd = subprocess.Popen(['miio', 'control', '192.168.1.36', 'power', 'off'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        stdout,stderr = myCmd.communicate()
+    except:
+        print("Exception PM2.5 a l'extinction")
+
+    query = "INSERT INTO home (timestamp, t1, h1, b1, t2, h2, b2, t3, h3, b3, t4, h4, b4, t5, h5, b5, pm25) VALUES ("+timestamp+", "+t1+", "+h1+", "+b1+", "+t2+", "+h2+", "+b2+", "+t3+", "+h3+", "+b3+", "+t4+", "+h4+", "+b4+", "+t5+", "+h5+", "+b5+", "+aqi+");"
 
     print(query)
 

@@ -164,7 +164,7 @@
       .then( function(data) {
         drawPower(data);
 
-        d3.json("getTemperature.php")
+        d3.json("getWeather.php")
           .then( function(data) {
             drawSunPower(data);
         });

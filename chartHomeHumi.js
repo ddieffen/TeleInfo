@@ -1,49 +1,18 @@
-    var hmargin = {top: 0, right: 50, bottom: 30, left: 50},
-    hwidth = 900 - hmargin.left - hmargin.right,
-    hheight = 205 - hmargin.top - hmargin.bottom;
+    var minTimestamp = 0;
+    var maxTimestamp = 0;
+    var minTemperature = 1000;
+    var maxTemperature = -1000;
+    var minHygrometry = 1000
+    var maxHygrometry = 0
 
-    var hparseTime = d3.timeParse("%s");
-
-    var hx = d3.scaleTime().range([0, hwidth]);
-    var hy = d3.scaleLinear().range([hheight, 0]);
-    var py = d3.scaleLinear().range([hheight, 0]);
-
-    var pluiLine = d3.line()
-      .defined(function(d) {
-        return d.plui !== -1;
-      })
-      .x(function(d) { return hx(d.Date);})
-      .y(function(d) { return py(d.plui);});
-    var pluiArea = d3.area()
-      .defined(function(d){
-        return d.plui !== -1;
-      })
-      .x(function(d) { return hx(d.Date);})
-      .y0(hheight)
-      .y1(function(d) { return py(d.plui);});
+    var parseTime = d3.timeParse("%s");
 
     var tmargin = {top: 0, right: 50, bottom: 0, left: 50},
     twidth = 900 - tmargin.left - tmargin.right,
     theight = 175 - tmargin.top - tmargin.bottom;
 
-    var tparseTime = d3.timeParse("%s");
-
     var tx = d3.scaleTime().range([0, twidth]);
     var ty = d3.scaleLinear().range([theight, 0]);
-
-    var tempLine2 = d3.line()
-      .defined(function(d) {
-        return d.tmp !== -1;
-      })
-      .x(function(d) { return tx(d.Date);})
-      .y(function(d) { return ty(d.tmp);});
-
-     var humLine2 = d3.line()
-      .defined(function(d) {
-        return d.hum !== -1;
-      })
-      .x(function(d) { return hx(d.Date);})
-      .y(function(d) { return hy(d.hum);});
 
     var tsvg = d3.select("body").append("svg")
       .attr("width", twidth + tmargin.left + tmargin.right)
@@ -52,14 +21,67 @@
       .attr("transform",
             "translate(" + tmargin.left + "," + tmargin.top + ")");
 
+    var hmargin = {top: 0, right: 50, bottom: 0, left: 50},
+    hwidth = 900 - hmargin.left - hmargin.right,
+    hheight = 205 - hmargin.top - hmargin.bottom;
+
+    var hx = d3.scaleTime().range([0, hwidth]);
+    var hy = d3.scaleLinear().range([hheight, 0]);
+    var py = d3.scaleLinear().range([hheight, 0]);
+
+    var pm25x = d3.scaleTime().range([0, hwidth]);
+    var pm25y = d3.scaleLinear().range([hheight, 0]);
+
+    var pm25svg = d3.select("body").append("svg")
+      .attr("width", hwidth + hmargin.left + hmargin.right)
+      .attr("height", hheight + hmargin.top + hmargin.bottom)
+    .append("g")
+      .attr("transform",
+            "translate(" + hmargin.left + "," + hmargin.top + ")");
+
     var hsvg = d3.select("body").append("svg")
       .attr("width", hwidth + hmargin.left + hmargin.right)
       .attr("height", hheight + hmargin.top + hmargin.bottom)
     .append("g")
       .attr("transform",
             "translate(" + hmargin.left + "," + hmargin.top + ")");
-    var hhmin = 1000
-    var hhmax = 0
+
+    function drawPM25(homeData) {
+      //format the data
+      homeData.forEach(function(d) {
+        d.Date = parseTime(d.t);
+      });
+
+      maxPM = d3.max(homeData, function(d) { return d.pm25})
+
+      //scale the range of the data
+      pm25x.domain(d3.extent(homeData, function(d) { return d.Date;}));
+      pm25y.domain([0, maxPM]);
+
+      //add the valueline path
+      pm25svg.selectAll("dot")
+        .data(homeData)
+        .enter().append("circle")
+        .attr("class", "styleTemp")
+        .attr("r", 0.3)
+        .attr("cx", function(d){ return pm25x(d.Date); })
+        .attr("cy", function(d){ return pm25y(d.pm25); });
+
+      //add the X axis
+      pm25svg.append("g")
+        .call(d3.axisBottom(pm25x));
+
+      //add the Y axis
+      pm25svg.append("g")
+        .attr("class", "axisCoral")
+        .call(d3.axisLeft(pm25y));
+
+      //add the Y1 axis
+      pm25svg.append("g")
+        .attr("class", "axisCoral")
+        .attr("transform", "translate( " + hwidth + ", 0)")
+        .call(d3.axisRight(pm25y));
+    }
 
     function drawHum(hdata) {
       //format the data
@@ -69,7 +91,7 @@
 
       //scale the range of the data
       hx.domain(d3.extent(hdata, function(d) { return d.Date;}));
-      hy.domain([hhmin, hhmax+5]);
+      hy.domain([minHygrometry, maxHygrometry+5]);
 
       //add the valueline path
       hsvg.selectAll("dot")
@@ -128,29 +150,19 @@
         .call(d3.axisRight(hy));
     }
 
-    var tminTimestamp = 0;
-    var tmaxTimestamp = 0;
-    var ttmin = 1000;
-    var ttmax = -1000;
     function drawTemp(tdata) {
        //find min and max in order to align the different datasets
-      tminTimestamp = d3.min(tdata, function(d) { return d.t})
-      tmaxTimestamp = d3.max(tdata, function(d) { return d.t})
+      minTimestamp = d3.min(tdata, function(d) { return d.t})
+      maxTimestamp = d3.max(tdata, function(d) { return d.t})
 
       //format the data
       tdata.forEach(function(d) {
-        d.Date = tparseTime(d.t);
+        d.Date = parseTime(d.t);
       });
 
       //scale the range of the data
       tx.domain(d3.extent(tdata, function(d) { return d.Date;}));
-      var ttmax = d3.max(tdata, function(d) { return d.t1});
-      ttmax = d3.max([ttmax,  d3.max(tdata, function(d) { return d.t2})])
-      ttmax = d3.max([ttmax,  d3.max(tdata, function(d) { return d.t3})])
-      ttmax = d3.max([ttmax,  d3.max(tdata, function(d) { return d.t4})])
-      ttmax = d3.max([ttmax,  d3.max(tdata, function(d) { return d.t5})])
-
-      ty.domain([ttmin, ttmax]);
+      ty.domain([minTemperature, maxTemperature]);
 
       //add the valueline path
       tsvg.selectAll("dot")
@@ -210,17 +222,17 @@
         .call(d3.axisRight(ty));
     }
 
-    function drawTemperature2(data) {
+    function drawWeather(data) {
       //add min and max timestamp data
       var firstObj = {};
-      firstObj["t"] = tminTimestamp;
+      firstObj["t"] = minTimestamp;
       firstObj["tmp"] = -1;
       firstObj["sun"] = -1;
       firstObj["hum"] = -1;
       firstObj["plui"] = -1;
       data.push(firstObj);
       var lastObj = {};
-      lastObj["t"] = tmaxTimestamp;
+      lastObj["t"] = maxTimestamp;
       lastObj["tmp"] = -1;
       lastObj["sun"] = -1;
       lastObj["hum"] = -1;
@@ -234,10 +246,18 @@
 
       //format the data
       data.forEach(function(d) {
-        d.Date = tparseTime(d.t);
+        d.Date = parseTime(d.t);
       });
-      ty.domain([ttmin, ttmax]);
+      ty.domain([minTemperature, maxTemperature]);
       py.domain([0, d3.max(data, function(d) { return d.plui})]);
+
+      //create the temperature line
+      var tempLine2 = d3.line()
+        .defined(function(d) {
+          return d.tmp !== -1;
+        })
+        .x(function(d) { return tx(d.Date);})
+        .y(function(d) { return ty(d.tmp);});
 
       //add the valueline path
       tsvg.append("path")
@@ -245,17 +265,42 @@
         .attr("class", "styleTemp")
         .attr("d", tempLine2);
 
+      //create the humidity line
+      var humLine2 = d3.line()
+        .defined(function(d) {
+          return d.hum !== -1;
+        })
+        .x(function(d) { return hx(d.Date);})
+        .y(function(d) { return hy(d.hum);});
+
       //add the valueline path
       hsvg.append("path")
         .data([data])
         .attr("class", "styleTemp")
         .attr("d", humLine2);
 
+      //create the pluie line
+      var pluiLine = d3.line()
+        .defined(function(d) {
+          return d.plui !== -1;
+        })
+        .x(function(d) { return hx(d.Date);})
+        .y(function(d) { return py(d.plui);});
+
       //add the valueline path
       hsvg.append("path")
         .data([data])
         .attr("class", "stylePlui")
         .attr("d", pluiLine);
+
+      //create the pluie area
+      var pluiArea = d3.area()
+        .defined(function(d){
+          return d.plui !== -1;
+        })
+        .x(function(d) { return hx(d.Date);})
+        .y0(hheight)
+        .y1(function(d) { return py(d.plui);});
 
       //add the area under the plui path
       hsvg.append("path")
@@ -265,53 +310,57 @@
     }
 
     d3.json("getHome.php")
-      .then( function(hdata) {
-          d3.json("getTemperature.php")
-            .then( function(data) {
-               hdata.forEach(function(d) {
+      .then( function(homeData) {
+          d3.json("getWeather.php")
+            .then( function(weatherData) {
+               homeData.forEach(function(d) {
                  if(d.t1 !== -1){
-                   ttmin = d3.min([ttmin, d.t1]);
+                   minTemperature = d3.min([minTemperature, d.t1]);
                  }
                  if(d.t2 !== -1){
-                   ttmin = d3.min([ttmin, d.t2]);
+                   minTemperature = d3.min([minTemperature, d.t2]);
                  }
                  if(d.t3 !== -1){
-                   ttmin = d3.min([ttmin, d.t3]);
+                   minTemperature = d3.min([minTemperature, d.t3]);
                  }
                });
-               ttmax = d3.max(hdata, function(d) { return d.t1});
-               ttmax = d3.max([ttmax,  d3.max(hdata, function(d) { return d.t2})]);
-               ttmax = d3.max([ttmax,  d3.max(hdata, function(d) { return d.t3})]);
-               data.forEach(function(d) {
+               maxTemperature = d3.max(homeData, function(d) { return d.t1});
+               maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t2})]);
+               maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t3})]);
+               maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t4})]);
+               maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t5})]);
+
+               weatherData.forEach(function(d) {
                  if(d.tmp !== -1){
-                   ttmin = d3.min([ttmin, d.tmp]);
-                   ttmax = d3.max([ttmax, d.tmp]);
+                   minTemperature = d3.min([minTemperature, d.tmp]);
+                   maxTemperature = d3.max([maxTemperature, d.tmp]);
                  }
                });
 
-               hdata.forEach(function(d) {
+               homeData.forEach(function(d) {
                  if(d.h1 !== -1){
-                   hhmin = d3.min([hhmin, d.h1]);
+                   minHygrometry = d3.min([minHygrometry, d.h1]);
                  }
                  if(d.h2 !== -1){
-                   hhmin = d3.min([hhmin, d.h2]);
+                   minHygrometry = d3.min([minHygrometry, d.h2]);
                  }
                  if(d.h3 !== -1){
-                   hhmin = d3.min([hhmin, d.h3]);
+                   minHygrometry = d3.min([minHygrometry, d.h3]);
                  }
                });
-               hhmax =  d3.max(hdata, function(d) { return d.h1});
-               hhmax = d3.max([hhmax,  d3.max(hdata, function(d) { return d.h2})])
-               hhmax = d3.max([hhmax,  d3.max(hdata, function(d) { return d.h3})])
-               data.forEach(function(d) {
+               maxHygrometry = d3.max(homeData, function(d) { return d.h1});
+               maxHygrometry = d3.max([maxHygrometry,  d3.max(homeData, function(d) { return d.h2})])
+               maxHygrometry = d3.max([maxHygrometry,  d3.max(homeData, function(d) { return d.h3})])
+               weatherData.forEach(function(d) {
                  if(d.tmp !== -1){
-                   hhmin = d3.min([hhmin, d.hum]);
-                   hhmax = d3.max([hhmax, d.hum]);
+                   minHygrometry = d3.min([minHygrometry, d.hum]);
+                   maxHygrometry = d3.max([maxHygrometry, d.hum]);
                  }
                });
 
-               drawTemp(hdata);
-               drawHum(hdata);
-               drawTemperature2(data);
+               drawTemp(homeData);
+               drawHum(homeData);
+               drawPM25(homeData);
+               drawWeather(weatherData);
           });
       });

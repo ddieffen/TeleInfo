@@ -3,14 +3,15 @@
 $sqlite = '/home/dietpi/teleinfo.sqlite';
 
   //
-  //  recupere les donnees de puissance des $nb_days derniers jours et les met en forme pour les afficher sur le graphique
+  //  recupere les donnees d'humidité et de température des $nb_days derniers jours
+  //  et les met en forme pour les afficher sur le graphique
   //
-  function getTempHum ($nb_days) {
+  function getHome ($nb_days) {
     global $sqlite;
     $now  = time();
     $past = strtotime("-$nb_days day", $now);
     $db = new SQLite3($sqlite);
-    $results = $db->query("SELECT timestamp,t1,t2,t3,t4,t5,h1,h2,h3,h4,h5 FROM home WHERE timestamp > $past;");
+    $results = $db->query("SELECT timestamp,t1,t2,t3,t4,t5,h1,h2,h3,h4,h5,pm25 FROM home WHERE timestamp > $past;");
 
     $data = array();
 
@@ -31,12 +32,13 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
                 ", \"h2\": ".$row['h2'].
                 ", \"h3\": ".$row['h3'].
                 ", \"h4\": ".$row['h4'].
-                ", \"h5\": ".$row['h5']."}";
+                ", \"h5\": ".$row['h5'].
+                ", \"pm25\": ".(!is_null($row['pm25']) ? $row['pm25'] : "-1")."}";
     }
 
     return "[ ".implode(', ', $data)."]";
   }
 
-echo getTempHum(3);
+echo getHome(3);
 
 ?>
