@@ -1,7 +1,7 @@
 //http://bl.ocks.org/mstanaland/6100713
-var wmargin = {top: 10, right: 0, bottom: 10, left: 20},
+var wmargin = {top: 10, right: 0, bottom: 30, left: 20},
     wwidth = 710 - wmargin.left - wmargin.right,
-    wheight = 180 - wmargin.top - wmargin.bottom;
+    wheight = 210 - wmargin.top - wmargin.bottom;
 
 var wsvg = d3.select("body").append("svg")
     .attr("width", wwidth + wmargin.left + wmargin.right)
@@ -24,6 +24,10 @@ function drawHPHCShares(data) {
     .domain([d3.min(series, stackMin), d3.max(series, stackMax)])
     .rangeRound([wheight - wmargin.bottom, wmargin.top]);
 
+//  var y = d3.scaleLinear()
+//    .domain([30,70])
+//    .rangeRound([wheight - wmargin.bottom, wmargin.top]);
+
   var z = d3.scaleOrdinal(d3.schemeCategory10);
 
   wsvg.append("g")
@@ -43,10 +47,17 @@ function drawHPHCShares(data) {
     .attr("height", function(d) { return y(d[0]) - y(d[1]); })
 
   wsvg.append("g")
+    .attr("class", "axis")
     .attr("transform", "translate(0," + y(0) + ")")
-    .call(d3.axisBottom(x));
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-65)");
 
   wsvg.append("g")
+    .attr("class", "axis")
     .attr("transform", "translate(" + wmargin.left + ",0)")
     .call(d3.axisLeft(y));
 }

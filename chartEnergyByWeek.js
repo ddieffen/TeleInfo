@@ -41,11 +41,20 @@ function drawWeeklyAverages(data) {
     .attr("y", function(d) { return y(d[1]); })
     .attr("height", function(d) { return y(d[0]) - y(d[1]); })
 
+  //add the X axis
   wNRGsvg.append("g")
+    .attr("class", "axis")
     .attr("transform", "translate(0," + y(0) + ")")
-    .call(d3.axisBottom(x));
+    .call(d3.axisBottom(x))
+    .selectAll("text")
+      .style("text-anchor", "end")
+      .attr("dx", "-.8em")
+      .attr("dy", ".15em")
+      .attr("transform", "rotate(-65)");
 
+  //Add the Y axis
   wNRGsvg.append("g")
+    .attr("class", "axis")
     .attr("transform", "translate(" + wNRGmargin.left + ",0)")
     .call(d3.axisLeft(y));
 

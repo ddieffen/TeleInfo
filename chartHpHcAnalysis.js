@@ -1,7 +1,7 @@
 //set the margins of the canevas
-var marginb = {top: 20, right: 20, bottom: 20, left:50},
+var marginb = {top: 30, right: 20, bottom: 30, left:50},
     widthb = 150 - marginb.left - marginb.right,
-    heightb = 180 - marginb.top - marginb.bottom;
+    heightb = 210 - marginb.top - marginb.bottom;
 
 //set the ranges
 var xb = d3.scaleBand().range([0, widthb]).padding(0.1);
@@ -24,7 +24,7 @@ d3.json("getHPHCShare.php")
 
     //scale the range of the data
     xb.domain(data.map(function(d) { return d.Label; }));
-    yb.domain([0, d3.max(data, function(d) { return d.Value; })]);
+    yb.domain([40, d3.max(data, function(d) { return d.Value; })]);
 
     //add the x axis
     svgb.append("g")

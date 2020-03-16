@@ -9,3 +9,7 @@ select strftime('%W', datetime(timestamp, 'unixepoch', 'localtime')) as week, av
 
 //somme mensuelle consomation
 select strftime('%m', datetime(timestamp, 'unixepoch', 'localtime')) as month, sum(daily_hc), sum(daily_hp) from conso group by month;
+
+//conso en kWh HPHC d'apres les puissances en Watts et l'intervalle en secondes entre chaque mesures
+select b.hchp, (sum(b.watt*(b.timestamp-a.timestamp))/3600)/1000 as kWh from puissance a, puissance b where a.timestamp >= strftime('%s', 'now', 'localtime', 'start of day', 'utc') and a.rowid%2 = 1 and b.rowid = a.rowid+1 group by b.hchp;
+

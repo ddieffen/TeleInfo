@@ -249,7 +249,11 @@
         d.Date = parseTime(d.t);
       });
       ty.domain([minTemperature, maxTemperature]);
-      py.domain([0, d3.max(data, function(d) { return d.plui})]);
+      var maxPluie = 1;
+      var maxPluieData = d3.max(data, function(d) { return d.plui});
+      maxPluie = d3.max([maxPluie, maxPluieData]);
+
+      py.domain([0, maxPluie]);
 
       //create the temperature line
       var tempLine2 = d3.line()
