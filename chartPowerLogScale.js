@@ -5,7 +5,7 @@
     var parseTime = d3.timeParse("%s");
 
     var x = d3.scaleTime().range([0, width]);
-    var y = d3.scaleLog().base(2).range([height, 0]);
+    var y = d3.scaleLog().base(10).range([height, 0]);
 
     var powerLineHP = d3.line()
       .defined(function(d) {
@@ -108,13 +108,13 @@
       //add the Y axis
       svg.append("g")
         .attr("class", "axisSteelBlue")
-        .call(d3.axisLeft(y));
+        .call(d3.axisLeft(y).tickFormat(d3.format(".0s")));
 
       //add the Y1 axis
       svg.append("g")
         .attr("class", "axisSteelBlue")
         .attr("transform", "translate( " + width + ", 0)")
-        .call(d3.axisRight(y));
+        .call(d3.axisRight(y).tickFormat(d3.format(".0s")));
     }
 
     function drawSunPower(data) {
