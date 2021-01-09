@@ -9,14 +9,14 @@ import re
 import sqlite3
 import time
 
-text = "-1"
-pext = "-1"
-hext = "-1"
-sunp = "-1"
-plui = "-1"
+text = "-100"
+pext = "-100"
+hext = "-100"
+sunp = "-100"
+plui = "-100"
 checked = 0
 
-query = "SELECT * FROM weather WHERE (text = -1 OR hext = -1 OR sunext = -1 OR plui = -1) AND (checked IS NULL OR checked <= 11) ORDER BY timestamp DESC;"
+query = "SELECT * FROM weather WHERE (text = -100 OR hext = -100 OR sunext = -100 OR plui = -100) AND (checked IS NULL OR checked <= 11) ORDER BY timestamp DESC;"
 database = "/home/dietpi/teleinfo.sqlite"
 conn = sqlite3.connect(database)
 cursor = conn.cursor()
@@ -99,8 +99,8 @@ for row in results:
         print "Area OK"
         spt = altArea.replace('hr','br').split('<br />')
 
-        text = re.findall("[\.0-9]*", spt[2].split('</b> ')[1])[0]
-        pext = re.findall("[\.0-9]*", spt[6].split('</b> ')[1])[0]
+        text = re.findall("[+-]?\d+(?:\.\d+)?", spt[2].split('</b> ')[1])[0]
+        pext = re.findall("[+-]?\d+(?:\.\d+)?", spt[6].split('</b> ')[1])[0]
 
         print "Idx 2 Temp", text
         print "Idx 6 Pres", pext
@@ -109,17 +109,17 @@ for row in results:
         for i in range(0, len(spt)):
            sunsplit = spt[i].split('</b> ')
            if len(sunsplit) > 1 and "W/m" in sunsplit[1]:
-               sunp = re.findall("[\.0-9]*", sunsplit[1])[0]
+               sunp = re.findall("[+-]?\d+(?:\.\d+)?", sunsplit[1])[0]
                print "Sun ", sunp
            else:
                print "No sun power line", i
            if len(sunsplit) > 1 and "%" in sunsplit[1]:
-               hext = re.findall("[\.0-9]*", sunsplit[1])[0]
+               hext = re.findall("[+-]?\d+(?:\.\d+)?", sunsplit[1])[0]
                print "Hext ", hext
            else:
                print "No Humidity line", i
            if len(sunsplit) > 1 and "mm" in sunsplit[1]:
-               plui = re.findall("[\.0-9]*", sunsplit[1])[0]
+               plui = re.findall("[+-]?\d+(?:\.\d+)?", sunsplit[1])[0]
                print "Pluie ", plui
            else:
                print "No rain line", i

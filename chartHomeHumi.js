@@ -1,7 +1,7 @@
     var minTimestamp = 0;
     var maxTimestamp = 0;
-    var minTemperature = 1000;
-    var maxTemperature = -1000;
+    var minTemperature = 100;
+    var maxTemperature = -100;
     var minHygrometry = 1000
     var maxHygrometry = 0
 
@@ -226,17 +226,17 @@
       //add min and max timestamp data
       var firstObj = {};
       firstObj["t"] = minTimestamp;
-      firstObj["tmp"] = -1;
-      firstObj["sun"] = -1;
-      firstObj["hum"] = -1;
-      firstObj["plui"] = -1;
+      firstObj["tmp"] = -100;
+      firstObj["sun"] = -100;
+      firstObj["hum"] = -100;
+      firstObj["plui"] = -100;
       data.push(firstObj);
       var lastObj = {};
       lastObj["t"] = maxTimestamp;
-      lastObj["tmp"] = -1;
-      lastObj["sun"] = -1;
-      lastObj["hum"] = -1;
-      lastObj["plui"] = -1;
+      lastObj["tmp"] = -100;
+      lastObj["sun"] = -100;
+      lastObj["hum"] = -100;
+      lastObj["plui"] = -100;
       data.push(lastObj);
 
       //sorting the data
@@ -258,7 +258,7 @@
       //create the temperature line
       var tempLine2 = d3.line()
         .defined(function(d) {
-          return d.tmp !== -1;
+          return d.tmp !== -100;
         })
         .x(function(d) { return tx(d.Date);})
         .y(function(d) { return ty(d.tmp);});
@@ -272,7 +272,7 @@
       //create the humidity line
       var humLine2 = d3.line()
         .defined(function(d) {
-          return d.hum !== -1;
+          return d.hum !== -100;
         })
         .x(function(d) { return hx(d.Date);})
         .y(function(d) { return hy(d.hum);});
@@ -286,7 +286,7 @@
       //create the pluie line
       var pluiLine = d3.line()
         .defined(function(d) {
-          return d.plui !== -1;
+          return d.plui !== -100;
         })
         .x(function(d) { return hx(d.Date);})
         .y(function(d) { return py(d.plui);});
@@ -300,7 +300,7 @@
       //create the pluie area
       var pluiArea = d3.area()
         .defined(function(d){
-          return d.plui !== -1;
+          return d.plui !== -100;
         })
         .x(function(d) { return hx(d.Date);})
         .y0(hheight)
