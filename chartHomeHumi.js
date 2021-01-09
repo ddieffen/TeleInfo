@@ -318,13 +318,13 @@
           d3.json("getWeather.php")
             .then( function(weatherData) {
                homeData.forEach(function(d) {
-                 if(d.t1 !== -1){
+                 if(d.t1 !== -100){
                    minTemperature = d3.min([minTemperature, d.t1]);
                  }
-                 if(d.t2 !== -1){
+                 if(d.t2 !== -100){
                    minTemperature = d3.min([minTemperature, d.t2]);
                  }
-                 if(d.t3 !== -1){
+                 if(d.t3 !== -100){
                    minTemperature = d3.min([minTemperature, d.t3]);
                  }
                });
@@ -335,20 +335,20 @@
                maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t5})]);
 
                weatherData.forEach(function(d) {
-                 if(d.tmp !== -1){
+                 if(d.tmp !== -100){
                    minTemperature = d3.min([minTemperature, d.tmp]);
                    maxTemperature = d3.max([maxTemperature, d.tmp]);
                  }
                });
 
                homeData.forEach(function(d) {
-                 if(d.h1 !== -1){
+                 if(d.h1 !== -100){
                    minHygrometry = d3.min([minHygrometry, d.h1]);
                  }
-                 if(d.h2 !== -1){
+                 if(d.h2 !== -100){
                    minHygrometry = d3.min([minHygrometry, d.h2]);
                  }
-                 if(d.h3 !== -1){
+                 if(d.h3 !== -100){
                    minHygrometry = d3.min([minHygrometry, d.h3]);
                  }
                });
@@ -356,7 +356,7 @@
                maxHygrometry = d3.max([maxHygrometry,  d3.max(homeData, function(d) { return d.h2})])
                maxHygrometry = d3.max([maxHygrometry,  d3.max(homeData, function(d) { return d.h3})])
                weatherData.forEach(function(d) {
-                 if(d.tmp !== -1){
+                 if(d.tmp !== -100){
                    minHygrometry = d3.min([minHygrometry, d.hum]);
                    maxHygrometry = d3.max([maxHygrometry, d.hum]);
                  }

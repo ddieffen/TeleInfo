@@ -37,14 +37,14 @@
 
     var sunLine = d3.line()
       .defined(function(d) {
-        return d.sun !== -1;
+        return d.sun !== -100;
       })
       .x(function(d) { return x(d.Date);})
       .y(function(d) { return y(d.Sun);});
 
     var sunArea = d3.area()
       .defined(function(d) {
-        return d.sun !== -1;
+        return d.sun !== -100;
       })
       .x(function(d) { return x(d.Date); })
       .y0(height)
@@ -117,15 +117,15 @@
       //add min and max timestamp data
       var firstObj = {};
       firstObj["t"] = minTimestamp;
-      firstObj["tmp"] = -1;
-      firstObj["sun"] = -1;
-      firstObj["hum"] = -1;
+      firstObj["tmp"] = -100;
+      firstObj["sun"] = -100;
+      firstObj["hum"] = -100;
       data.push(firstObj);
       var lastObj = {};
       lastObj["t"] = maxTimestamp;
-      lastObj["tmp"] = -1;
-      lastObj["sun"] = -1;
-      lastObj["hum"] = -1;
+      lastObj["tmp"] = -100;
+      lastObj["sun"] = -100;
+      lastObj["hum"] = -100;
       data.push(lastObj);
 
       //sorting the data
