@@ -26,7 +26,7 @@ try:
 finally:
     conn.close()
 
-mois =["janvier","fevrier","mars","avril`","mai","juin","juillet","aout","septembte","octobre","novembre","decembre"]
+mois =["janvier","fevrier","mars","avril","mai","juin","juillet","aout","septembte","octobre","novembre","decembre"]
 
 for row in results:
     print "Timestamp=" + str(row[0])
@@ -95,8 +95,9 @@ for row in results:
         print len(area)
 
         altArea = area[0].attrib['alt']
+        print altArea
 
-        print "Area OK"
+        print "AltArea OK"
         spt = altArea.replace('hr','br').split('<br />')
 
         text = re.findall("[+-]?\d+(?:\.\d+)?", spt[2].split('</b> ')[1])[0]

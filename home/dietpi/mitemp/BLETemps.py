@@ -17,28 +17,29 @@ from mitemp_bt.mitemp_bt_poller import MiTempBtPoller, \
 #CREATE TABLE home (timestamp INTEGER, t1 REAL /* temperature C parentale */, h1 REAL /* humidity re parentale */, b1 REAL /* battery parentale */, t2 REAL /* temperature C salon */, h2 REAL /* humidity re salon */, b2 REAL /* battery salon */, t3 REAL /* temperature C baby */, h3 REAL /* humidity re baby */, b3 REAL /* battery baby*/);
 
 def poll():
-    t1 = "-1"
-    h1 = "-1"
-    b1 = "-1"
-    t2 = "-1"
-    h2 = "-1"
-    b2 = "-1"
-    t3 = "-1"
-    h3 = "-1"
-    b3 = "-1"
-    t4 = "-1"
-    h4 = "-1"
-    b4 = "-1"
-    t5 = "-1"
-    h5 = "-1"
-    b5 = "-1"
-    aqi = "-1"
+    t1 = "-100"
+    h1 = "-100"
+    b1 = "-100"
+    t2 = "-100"
+    h2 = "-100"
+    b2 = "-100"
+    t3 = "-100"
+    h3 = "-100"
+    b3 = "-100"
+    t6 = "-100"
+    h6 = "-100"
+    b6 = "-100"
+    t5 = "-100"
+    h5 = "-100"
+    b5 = "-100"
+    aqi = "-100"
+    IPpm25 = "192.168.49.21"
 
     timestamp = str(int(time.time()))
 
     try:
         print("Tentative PM2.5 Allumage capteur")
-        myCmd = subprocess.Popen(['miio', 'control', '192.168.1.36', 'power', 'on'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        myCmd = subprocess.Popen(['miio', 'control', IPpm25, 'power', 'on'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout,stderr = myCmd.communicate()
     except:
         print("Exception PM2.5 a l'allumage")
@@ -90,11 +91,11 @@ def poll():
     try:
         print("Tentative Entree")
         poller = MiTempBtPoller(mac, backend)
-        b4 = format(poller.parameter_value(MI_BATTERY))
+        b6 = format(poller.parameter_value(MI_BATTERY))
         print("Battery: " + b4)
-        t4 = format(poller.parameter_value(MI_TEMPERATURE))
+        t6 = format(poller.parameter_value(MI_TEMPERATURE))
         print("Temperature: " + t4)
-        h4 = format(poller.parameter_value(MI_HUMIDITY))
+        h6 = format(poller.parameter_value(MI_HUMIDITY))
         print("Humidity: " + h4)
     except:
         print("Exception Entree")
@@ -114,7 +115,7 @@ def poll():
 
     try:
         print("Tentative PM2.5 par Wifi")
-        myCmd = subprocess.Popen(['miio', 'control', '192.168.1.36', 'pm2.5'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        myCmd = subprocess.Popen(['miio', 'control', IPpm25, 'pm2.5'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
         stdout,stderr = myCmd.communicate()
         spt = stdout.split(b'\n');
         for i in range(0, len(spt)):
@@ -126,13 +127,16 @@ def poll():
         print("Exception PM2.5")
 
     try:
-        print("Tentative PM2.5 extinction capteur")
-        myCmd = subprocess.Popen(['miio', 'control', '192.168.1.36', 'power', 'off'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        stdout,stderr = myCmd.communicate()
+        if int(aqi) <= 30:
+            print("Tentative PM2.5 extinction capteur")
+            myCmd = subprocess.Popen(['miio', 'control', IPpm25, 'power', 'off'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            stdout,stderr = myCmd.communicate()
+        else:
+            print("aqi superieur a 30")
     except:
         print("Exception PM2.5 a l'extinction")
 
-    query = "INSERT INTO home (timestamp, t1, h1, b1, t2, h2, b2, t3, h3, b3, t4, h4, b4, t5, h5, b5, pm25) VALUES ("+timestamp+", "+t1+", "+h1+", "+b1+", "+t2+", "+h2+", "+b2+", "+t3+", "+h3+", "+b3+", "+t4+", "+h4+", "+b4+", "+t5+", "+h5+", "+b5+", "+aqi+");"
+    query = "INSERT INTO home (timestamp, t1, h1, b1, t2, h2, b2, t3, h3, b3, t6, h6, b6, t5, h5, b5, pm25) VALUES ("+timestamp+", "+t1+", "+h1+", "+b1+", "+t2+", "+h2+", "+b2+", "+t3+", "+h3+", "+b3+", "+t4+", "+h4+", "+b4+", "+t5+", "+h5+", "+b5+", "+aqi+");"
 
     print(query)
 
