@@ -16,7 +16,7 @@ sunp = "-100"
 plui = "-100"
 checked = 0
 
-query = "SELECT * FROM weather WHERE (text = -100 OR hext = -100 OR sunext = -100 OR plui = -100) AND (checked IS NULL OR checked <= 11) ORDER BY timestamp DESC;"
+query = "SELECT * FROM weather WHERE (text = -100 OR hext = -100 OR sunext = -100 OR plui = -100) AND (checked IS NULL OR checked <= 12) ORDER BY timestamp DESC;"
 database = "/home/dietpi/teleinfo.sqlite"
 conn = sqlite3.connect(database)
 cursor = conn.cursor()

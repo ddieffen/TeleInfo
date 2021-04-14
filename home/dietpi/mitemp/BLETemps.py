@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """Demo file showing how to use the mitemp library."""
 
@@ -26,14 +27,15 @@ def poll():
     t3 = "-100"
     h3 = "-100"
     b3 = "-100"
-    t6 = "-100"
-    h6 = "-100"
-    b6 = "-100"
+    t4 = "-100"
+    h4 = "-100"
+    b4 = "-100"
     t5 = "-100"
     h5 = "-100"
     b5 = "-100"
     aqi = "-100"
-    IPpm25 = "192.168.49.21"
+    t6 = "-100"
+    IPpm25 = "192.168.49.23"
 
     timestamp = str(int(time.time()))
 
@@ -71,8 +73,9 @@ def poll():
         print("Temperature: " + t2)
         h2 = format(poller.parameter_value(MI_HUMIDITY))
         print("Humidity: " + h2)
-    except:
+    except Exception as e1:
         print("Exception Salon")
+        print(e1)
 
     mac = "58:2D:34:30:B2:D3" #bébé
     try:
@@ -84,21 +87,23 @@ def poll():
         print("Temperature: " + t3)
         h3 = format(poller.parameter_value(MI_HUMIDITY))
         print("Humidity: " + h3)
-    except:
+    except Exception as e2:
         print("Exception Bebe")
+        print(e2)
 
-    mac = "58:2D:34:30:B7:1E" #entree
+    mac = "58:2D:34:30:B7:1E" #couloir
     try:
-        print("Tentative Entree")
+        print("Tentative Couloir")
         poller = MiTempBtPoller(mac, backend)
-        b6 = format(poller.parameter_value(MI_BATTERY))
+        b4 = format(poller.parameter_value(MI_BATTERY))
         print("Battery: " + b4)
-        t6 = format(poller.parameter_value(MI_TEMPERATURE))
+        t4 = format(poller.parameter_value(MI_TEMPERATURE))
         print("Temperature: " + t4)
-        h6 = format(poller.parameter_value(MI_HUMIDITY))
+        h4 = format(poller.parameter_value(MI_HUMIDITY))
         print("Humidity: " + h4)
-    except:
-        print("Exception Entree")
+    except Exception as e3:
+        print("Exception Couloir")
+        print(e3)
 
     mac = "58:2D:34:30:B6:9E" #salle de bains
     try:
@@ -136,7 +141,18 @@ def poll():
     except:
         print("Exception PM2.5 a l'extinction")
 
-    query = "INSERT INTO home (timestamp, t1, h1, b1, t2, h2, b2, t3, h3, b3, t6, h6, b6, t5, h5, b5, pm25) VALUES ("+timestamp+", "+t1+", "+h1+", "+b1+", "+t2+", "+h2+", "+b2+", "+t3+", "+h3+", "+b3+", "+t4+", "+h4+", "+b4+", "+t5+", "+h5+", "+b5+", "+aqi+");"
+    try:
+        f1 = open("/home/dietpi/serre1-temp.txt", "r+")
+    except OSError:
+        print("Could not read serre file")
+    with f1:
+        last_line = f1.readlines()[-1]
+        t6 = float(str(last_line).replace(' ',''))
+        t6 = str(t6)
+        f1.truncate(0)
+        f1.close()
+
+    query = "INSERT INTO home (timestamp, t1, h1, b1, t2, h2, b2, t3, h3, b3, t4, h4, b4, t5, h5, b5, pm25, t6) VALUES ("+timestamp+", "+t1+", "+h1+", "+b1+", "+t2+", "+h2+", "+b2+", "+t3+", "+h3+", "+b3+", "+t4+", "+h4+", "+b4+", "+t5+", "+h5+", "+b5+", "+aqi+", "+t6+");"
 
     print(query)
 

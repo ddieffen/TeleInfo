@@ -1,3 +1,4 @@
 #!/bin/bash
-
-sudo python /home/dietpi/InfoClimat.py
+python /home/dietpi/MeteoBzh.py
+#python /home/dietpi/InfoClimatPast.py
+/home/dietpi/MosquittoSub.sh

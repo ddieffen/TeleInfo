@@ -8,6 +8,7 @@ import requests
 import re
 import sqlite3
 import time
+import logging
 
 text = "-100"
 pext = "-100"
@@ -16,22 +17,38 @@ sunp = "-100"
 plui = "-100"
 
 # base_url variable to store url
+logging.basicConfig(filename='InfoClimat.log', filemode='a', format='%(name)s - %(levelname)s - %(message)s')
 base_url = "https://www.infoclimat.fr/cartes/observations-meteo/temps-reel/radiations-solaires/france.html"
 
 timestamp = str(int(time.time()))
+logging.info('Got current time')
 
 try:
     # get method of requests module
     # return response object
+    print base_url
     page = requests.get(base_url)
     print "REQUEST===================================================="
     print page.encoding
     tree = html.fromstring(page.text)
 
+    print tree
+
     area = tree.xpath('//area[@alt[contains(.,"Pluguffan")]]')
     altArea = area[0].attrib['alt']
 
     print "Area", altArea
+
+    if "Partenariat" in altArea:
+        print "Complete bloc!"
+    else:
+        print "Incomlete retying"
+        time.sleep(5)
+        page = requests.get(base_url)
+        tree = html.fromstring(page.text)
+        area = tree.xpath('//area[@alt[contains(.,"Pluguffan")]]')
+        altArea = area[0].attrib['alt']
+
     spt = altArea.replace('hr','br').split('<br />')
 
     print "Split2", spt[2]
@@ -63,8 +80,8 @@ try:
 
     checked = "1"
 
-except Exception:
-    print "No Connection Exception"
+except Exception, e:
+    print "No Connection Exception : " + str(e)
 
 query = "INSERT INTO weather (timestamp, text, hext, sunext, plui) VALUES ("+timestamp+", "+text+", "+hext+", "+sunp+", "+plui+");"
 

@@ -204,6 +204,14 @@
         .attr("r", 0.3)
         .attr("cx", function(d) {return tx(d.Date); })
         .attr("cy", function(d) {return ty(d.t5); });
+      //add the valueline path
+      tsvg.selectAll("dot")
+        .data(tdata)
+        .enter().append("circle")
+        .attr("class", "styleT6")
+        .attr("r", 0.3)
+        .attr("cx", function(d) {return tx(d.Date); })
+        .attr("cy", function(d) {return ty(d.t6); });
 
       //add the X axis
       tsvg.append("g")
@@ -317,6 +325,7 @@
       .then( function(homeData) {
           d3.json("getWeather.php")
             .then( function(weatherData) {
+
                homeData.forEach(function(d) {
                  if(d.t1 !== -100){
                    minTemperature = d3.min([minTemperature, d.t1]);
@@ -327,12 +336,23 @@
                  if(d.t3 !== -100){
                    minTemperature = d3.min([minTemperature, d.t3]);
                  }
+                 if(d.t4 !== -100){
+                   minTemperature = d3.min([minTemperature, d.t4]);
+                 }
+                 if(d.t5 !== -100){
+                   minTemperature = d3.min([minTemperature, d.t5]);
+                 }
+                 if(d.t6 !== -100){
+                   minTemperature = d3.min([minTemperature, d.t6]);
+                 }
                });
+
                maxTemperature = d3.max(homeData, function(d) { return d.t1});
                maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t2})]);
                maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t3})]);
                maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t4})]);
                maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t5})]);
+               maxTemperature = d3.max([maxTemperature,  d3.max(homeData, function(d) { return d.t6})]);
 
                weatherData.forEach(function(d) {
                  if(d.tmp !== -100){

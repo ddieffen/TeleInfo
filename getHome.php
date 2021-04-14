@@ -11,7 +11,7 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
     $now  = time();
     $past = strtotime("-$nb_days day", $now);
     $db = new SQLite3($sqlite);
-    $results = $db->query("SELECT timestamp,t1,t2,t3,t4,t5,h1,h2,h3,h4,h5,pm25 FROM home WHERE timestamp > $past ORDER BY timestamp ASC;");
+    $results = $db->query("SELECT timestamp,t1,t2,t3,t4,t5,h1,h2,h3,h4,h5,pm25,t6 FROM home WHERE timestamp > $past ORDER BY timestamp ASC;");
 
     $data = array();
 
@@ -33,7 +33,8 @@ $sqlite = '/home/dietpi/teleinfo.sqlite';
                 ", \"h3\": ".(!is_null($row['h3']) ? $row['h3'] : "-100").
                 ", \"h4\": ".(!is_null($row['h4']) ? $row['h4'] : "-100").
                 ", \"h5\": ".(!is_null($row['h5']) ? $row['h5'] : "-100").
-                ", \"pm25\": ".(!is_null($row['pm25']) ? $row['pm25'] : "-100")."}";
+                ", \"pm25\": ".(!is_null($row['pm25']) ? $row['pm25'] : "-100").
+                ", \"t6\": ".(!is_null($row['t6']) ? $row['t6'] : "-100")."}";
     }
 
     return "[ ".implode(', ', $data)."]";
